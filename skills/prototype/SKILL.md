@@ -1,10 +1,18 @@
 ---
 name: prototype
-description: Build multiple genuinely different versions of a UI piece you describe, rendered behind a visual picker so you can flip through them live and promote the one that feels right. Only runs when explicitly invoked; it does not trigger on its own.
+description: Build UI variants behind a visual picker, or a clickable state-model demo with guided scenarios. Only runs when explicitly invoked; it does not trigger on its own.
 disable-model-invocation: true
 ---
 
-# Prototyping Variants
+# Prototype
+
+## Choose the question
+
+For a business-logic, state-transition, or data-model question, follow [LOGIC.md](LOGIC.md). It builds one self-contained HTML demo with readable state, free-play actions, and guided scenarios.
+
+For a visual UI question, follow the UI variant workflow below. Keep its picker, the project's design rules, dev-only route, and promotion process. If the question is ambiguous, infer it from the request and state the assumption.
+
+## UI variants
 
 A divergence skill. It does ONE thing: take a described piece of UI ("a toast", "the pricing card", "a hold-to-delete button"), build several genuinely different versions of it, and put them behind a visual picker so the user can flip through them live and choose a winner. It does not review existing UI, plan fixes for it, or choose dependencies.
 
@@ -101,8 +109,9 @@ When the user picks: integrate that variant where it belongs, following the proj
 
 | Invocation | Behavior |
 | --- | --- |
-| `<description>` | Full workflow: scope → recon → 3 variants → picker → wait for choice |
-| `<description> x5` | Same, with that many variants (capped at 5) |
+| `<UI description>` | Full UI workflow: scope → recon → 3 variants → picker → wait for choice |
+| `<logic or state-model question>` | Follow [LOGIC.md](LOGIC.md): question → pure model → clickable demo → guided scenarios → decision |
+| `<UI description> x5` | UI variant workflow with that many variants, capped at 5 |
 | `riff <variant>` | New round: keep the harness, generate a fresh set diverging around the named variant's direction |
 | `keep <variant>` | Promote that variant into the codebase and delete the prototype surface |
 | `keep <variant>, leave the picker` | Promote, but keep the prototype surface around |

@@ -10,7 +10,7 @@ Which model runs each pstack role, and how a parent reaches it. Skills name a ro
 | Astra | Codex | `gpt-6-astra` | Codex |
 | Sol 6.1 | Codex | `gpt-6.1-sol` | Codex |
 
-Opus writes code. Astra does judgment, prose, synthesis, and the hardest tasks. Sol runs cheap parallel work.
+Opus writes all code, tests included. Astra and Sol never write code in this repository; they read, review, and verify. Astra does judgment, prose, synthesis, and the hardest reasoning. Sol runs cheap parallel work.
 
 ## Roles
 
@@ -23,14 +23,14 @@ Effort is `high` unless a row says otherwise.
 | `perf-issue` | Opus |
 | `hillclimb` | Opus |
 | `judgment and prose` | Astra |
-| `hardest tasks` | Astra, effort `xhigh` |
+| `hardest tasks` | Opus when the task writes code. Astra, effort `xhigh`, when it only reasons. |
 | `how explorer` | Sol, effort `medium` |
 | `how explainer` | Astra |
 | `why investigators` | parent |
 | `why synthesizer` | parent |
 | `reflect tooling` | parent |
 | `reflect judgment, divergent, synthesizer` | parent |
-| `arena runners` | Opus, Sol |
+| `arena runners` | Opus, Sol. A runner whose candidate is code runs on Opus |
 | `arena cross-judge pool` | Opus, Sol, Astra |
 | `swarm workers` | Sol, effort `medium` |
 | `architect runners` | Opus, Sol |
@@ -62,10 +62,9 @@ Write the full lane prompt to a file first. Pass it on stdin. Never put prompt t
 ### Codex parent to Opus
 
 ```bash
-cd <repository or dedicated worktree> && claude -p \
+cd <repository or dedicated worktree> && APP_SKIP_STOP_CHECK=1 claude -p \
   --model opus --effort high \
   --permission-mode plan \
-  --setting-sources user --settings '{"disableAllHooks":true}' \
   --strict-mcp-config \
   --tools "Read,Grep,Glob,Bash" \
   --disable-slash-commands \
@@ -74,7 +73,7 @@ cd <repository or dedicated worktree> && claude -p \
   < <prompt file> > <output file>
 ```
 
-- `--setting-sources user` skips this repository's `.claude/settings.json`, whose Stop hook runs the full feedback check. `disableAllHooks` also turns off user and plugin hooks. Project `CLAUDE.md` still loads.
+- `APP_SKIP_STOP_CHECK=1` skips the Stop hook's full feedback check. The worktree's `.claude/settings.json` still runs the Bash guard, and project `CLAUDE.md` still loads.
 - `--permission-mode plan` is read-only. Read-only Bash such as `git log` still runs.
 - For a writer, use `--permission-mode acceptEdits` and `--tools "Read,Grep,Glob,Bash,Edit,Write"`, and run it only in a dedicated worktree.
 - `--tools` leaves out `Agent`, so the lane cannot spawn subagents. `--strict-mcp-config` with no `--mcp-config` loads no MCP servers.
@@ -88,21 +87,34 @@ codex exec \
   --sandbox read-only \
   --cd <repository or dedicated worktree> \
   --ephemeral \
-  --disable plugins --disable multi_agent --disable hooks --disable memories \
+  --disable plugins --disable multi_agent --disable memories \
   --output-last-message <output file> \
   - < <prompt file> > <log file> 2>&1
 ```
 
 - Use `--model gpt-6-astra` for an Astra lane.
-- For a writer, use `--sandbox workspace-write` and a dedicated worktree.
-- `--disable hooks` skips this repository's `.codex/hooks.json` Stop hook. `--disable multi_agent` stops nested subagents.
+- `--output-last-message` saves the lane's final message, so the prompt asks for the answer as that message and never asks the lane to write a file.
+- Pick `--sandbox` and `--cd` by what the lane does. A brief for a writable sandbox says "never edit tracked files".
+
+| Lane | `--sandbox` | `--cd` |
+|---|---|---|
+| Review or research that only reads | `read-only` | the repository |
+| Audit of a branch head | `workspace-write`, with `TMPDIR` set per [Scratch](harness-tools.md#scratch) | a detached worktree at that head |
+| Verification lane (app, builds, tests, perf) | `danger-full-access` | a detached worktree at that head |
+
+- An audit runs the branch's own tests there with `npx vitest run <file>`. Under `read-only`, node cannot spawn git (`spawnSync git EPERM`) and tests cannot write temp files, and from `main` the branch's files are missing.
+- A verification lane needs full access because Electron dies under `workspace-write` with `sandbox_host_linux.cc:41 Check failed: . shutdown: Operation not permitted`.
+- Make the detached worktree with `git worktree add --detach <path> <head>`, and hard-link `node_modules` from `main`, or from the owner's worktree when the branch changed dependencies. Remove it when the lane ends.
+- The lane runs the repo's hooks while the developer's approval of `.codex/hooks.json` is current, and `.codex/rules/project.rules` refuses the guarded commands either way, per [`harness-tools.md`](harness-tools.md#hooks). Its Stop hook's feedback check covers only uncommitted files, so it passes for a lane that leaves tracked files alone and runs in a worktree with `node_modules`. Without `node_modules` the check fails, and its failure replaces the lane's final message. `--disable hooks` turns off the guard as well, so lanes keep hooks on. `--disable multi_agent` stops nested subagents.
 - The log's header carries a `model:` line. Record it.
 
 ## Rules
 
 - Give every lane its own prompt file, output file, and worktree when it writes.
 - Start every cross-provider lane in the background and keep its handle. Claude Code uses Bash with `run_in_background: true` and keeps the task id. Codex keeps the exec session id and polls it. A foreground call can time out on a healthy lane.
+- Wait by acting on each lane's background-task notification. When one wait must cover several lanes, empty `done.txt` with `: > done.txt`, run each lane as `codex exec … ; echo "<lane> exit=$?" >> done.txt`, start `until [ "$(wc -l < done.txt)" -ge <lane count> ]; do sleep 10; done` in the background, and end the turn. Read a lane's output only after its `exit=` line exists. An output file appears while the lane is still writing it and never appears when a run fails first, and `pgrep -fa "codex exec"` lists every agent's runs, not only yours.
 - Start native and cross-provider lanes in the same fan-out. Judge only after every lane has finished.
 - Never fall back to a different model. A missing CLI, failed login, unknown model, empty output, or non-zero exit is a dropout. Record it and follow the calling skill's dropout rule.
 - Record which model each lane used, in the synthesis note or decision trail.
-- A cross-provider writer leaves its changes uncommitted in its worktree. The parent reviews the diff and commits.
+- An Opus writer started from a Codex parent leaves its changes uncommitted in its worktree. The parent reviews the diff and commits.
+- When a capability limit decides which model runs expensive work, such as which models can launch the app, probe it with a short run before planning around it.

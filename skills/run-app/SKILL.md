@@ -26,19 +26,32 @@ cleanup. Check status with host visibility first. Process visibility errors
 can appear as `stopped`, and starting then clears managed state while the
 previous runtime may still be alive.
 
-If it reports `ready` for the requested browser workspace and project, reuse
-that session and its `rendererUrl`. If it reports `starting`, wait for that
-start to finish and check status again. Start only when it reports `stopped`:
+If it reports `ready` for the requested browser workspace and project with an
+empty `restartFor`, reuse that session and its `rendererUrl`. If it reports
+`starting`, wait for that start to finish and check status again. Start only
+when it reports `stopped`:
 
 ```bash
 npm run app:start -- --browser && npm run --silent app:status -- --json
 ```
 
+`restartFor` lists files loaded only at start (dependencies, the Vite config,
+the database baseline, dev launch scripts) that changed after the process
+loading them started. The session restarts its dev server on its own a few
+seconds after a dependency, Vite config, or baseline change and reports
+`starting` until the new server is ready; a dev launch script change needs a
+session restart. Backend code reloads on its own, so a `restartFor` that stays
+nonempty or a `failed` state with its `error` is the signal to restart: run
+`npm run app:restart`, which keeps the session's mode and clears the replaced
+server's runtime errors. A start rebuilds the generated sample when the
+baseline changed.
+
 Do not open the browser until status reports `ready` with a nonempty
 `rendererUrl`.
 
-Respect an explicitly selected `APP_PROJECT_PATH`. Without one, the
-session uses the generated sample project. The port is dynamic, so use
+Respect an explicitly selected `APP_PROJECT_PATH`, and keep it separate
+from any project an Electron window has open. Without one, the session uses the
+generated sample project. The port is dynamic, so use
 the exact `rendererUrl` returned by status.
 
 In T3 Code, open the real URL once with `preview_open` using `open: true` and
@@ -48,7 +61,7 @@ verify `Overview` before reporting that the app opened. Do not call browser
 preview status first or open a blank tab as a probe.
 
 To check a reported symptom, find its route, fixture, and test in
-[feature-verification.md](../../../docs/agents/feature-verification.md).
+the [verification map](../verify-electron/features/README.md).
 
 ## Browser unavailable
 
@@ -66,23 +79,30 @@ This is a recovery attempt, not a guaranteed fix. The available browser tools
 cannot repair host registration.
 
 Confirm that app status still reports a ready browser session, then use its
-current URL for one read-only bridge request. The `Origin` header must match
-that URL:
+current URL for one read-only request over the dev server's WebSocket:
 
 ```bash
 set -e
 status_json="$(npm run --silent app:status -- --json)"
 renderer_url="$(node -e 'const s=JSON.parse(process.argv[1]); if(s.state!=="ready"||s.mode!=="browser"||!s.rendererUrl)process.exit(2); process.stdout.write(s.rendererUrl)' "$status_json")"
-origin="$(node -e 'console.log(new URL(process.argv[1]).origin)' "$renderer_url")"
-bridge_json="$(curl --fail-with-body --silent --show-error --max-time 10 \
-  -X POST -H 'Content-Type: application/json' -H "Origin: $origin" \
-  -d '{"key":"listCharacters","input":{}}' \
-  "$origin/__app_dev_browser__/invoke")"
-node -e 'const b=JSON.parse(process.argv[1]); if(!Array.isArray(b.output))process.exit(3); console.log(`bridge ready (${b.output.length} characters)`)' "$bridge_json"
+bridge_json="$(node -e '
+const url = new URL("/", process.argv[1]);
+url.protocol = url.protocol.replace("http", "ws");
+const socket = new WebSocket(url, "vite-hmr");
+setTimeout(() => process.exit(4), 10_000);
+socket.onopen = () => socket.send(JSON.stringify({ type: "custom", event: "app:wire",
+  data: { kind: "request", id: 1, key: "listCharacters", input: {} } }));
+socket.onmessage = ({ data }) => {
+  const message = JSON.parse(data);
+  if (message.event !== "app:wire" || message.data.id !== 1) return;
+  console.log(JSON.stringify(message.data));
+  process.exit(0);
+};' "$renderer_url")"
+node -e 'const b=JSON.parse(process.argv[1]); if(b.kind!=="reply"||!Array.isArray(b.envelope.output))process.exit(3); console.log(`bridge ready (${b.envelope.output.length} characters)`)' "$bridge_json"
 ```
 
-The `output` must be an array; an empty array is valid. HTTP success alone is
-not enough. This check proves the runtime and bridge respond. It does not
+The `output` must be an array; an empty array is valid. A reply alone is not
+enough. This check proves the runtime and bridge respond. It does not
 fulfill a request to view the app. Report that the browser request remains
 unfulfilled, name the exact browser blocker, and leave a ready runtime
 running. If the check fails, report the bridge failure and do not claim that
@@ -91,9 +111,10 @@ the runtime was verified.
 ## Restart and recovery
 
 Stop a session only when the user asks, or when a restart is justified by a
-different mode or project, or by changes outside `src/renderer`. Renderer
-`.tsx` edits hot-reload; `.ts` edits reload the page and drop unsaved UI state.
-For a justified restart:
+different mode or project, or by changes to the dev launch scripts
+(`scripts/dev-*.mjs`). Renderer `.tsx` edits hot-reload; renderer `.ts` edits
+reload the page and drop unsaved UI state. Backend edits restart the dev
+server and reload the page on their own. For a justified restart:
 
 ```bash
 npm run app:stop

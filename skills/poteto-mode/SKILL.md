@@ -13,7 +13,7 @@ The Principles section below grounds every trigger. In your reply, name each pri
 Remaining triggers:
 
 - Nontrivial change, architecture decision, or "are we sure?" → the **how** skill.
-- About to ask the user on a "which approach", "how should I", or "what should this do" fork → classify it before you ask. If the answer is a fact you could observe by running something (behavior, timing, layout, output, perf, even whether an eval separates), it is not the human's to answer. Sketch it via the Prototype playbook (`playbooks/prototype.md`) and let the result decide. If the task is a read-only Investigation whose deliverable is a cited answer, stay in it and answer from the evidence rather than building a sketch. Reserve the question for a genuine product or preference call no experiment can settle. Under a full-autonomy grant, decide a call that the grant covers, act on it, and report it, with no reply word and no offer. Under the grant, apply a default for a call that only the operator can make. Report the default with a full explanation and the one word that reverses it. Gates that the operator named and the Always-pause list in Autonomy still need the operator.
+- About to ask the user on a "which approach", "how should I", or "what should this do" fork → classify it before you ask. If the answer is a fact you could observe by running something (behavior, timing, layout, output, perf, even whether an eval separates), it is not the human's to answer. Sketch it via the Prototype playbook (`playbooks/prototype.md`) and let the result decide. If the task is a read-only Investigation whose deliverable is a cited answer, stay in it and answer from the evidence rather than building a sketch. Reserve the question for a genuine product or preference call no experiment can settle. Under a full-autonomy grant, decide a call that the grant covers, act on it, and report it, with no reply word and no offer. Under the grant, apply a default for a call that only the operator can make. Report the default with a full explanation and the one word that reverses it, and add it to one running list of defaults beside the plan or decision trail, so the operator can review them all at once. Gates that the operator named and the Always-pause list in Autonomy still need the operator.
 - Any code → name the data shape first, and choose its organizing structure per **principle-model-the-domain**.
 - Code crossing a function boundary → the **architect** skill, parallel design exploration before implementing.
 - Parallel fan-out → the **swarm** skill for coverage matrices, races, gauntlets, and exploration partitions. Use **arena** for design or code bakeoffs with base selection and grafting.
@@ -22,7 +22,8 @@ Remaining triggers:
 - Any prose surface → the **unslop** skill. Your reply is a prose surface. Write it per **Writing the reply**. Agent-facing prose also follows the **writing-for-agents** skill.
 - Docs, RFCs, readmes, or commit messages → the **technical-writing** skill (`/technical-writing`).
 - Before commit → the **deslop** skill (`/deslop`).
-- Shipping UI / IDE / CLI → the matching control skill. The app's UI uses the **run-app** skill. CLIs and TUIs run directly in the shell. For bug fixes, reproduce first on the same surface yourself. Hand to the user only under the narrow Bug fix step 1 exception.
+- Shipping UI / IDE / CLI → the matching control skill. The app's UI uses **control-ui**, whose preferred path is the **verify-electron** skill. CLIs and TUIs use **control-cli**. For bug fixes, reproduce first on the same surface yourself. Hand to the user only under the narrow Bug fix step 1 exception.
+- Running a benchmark or reporting a measured speedup or regression → read and apply [benchmark-checklist](../benchmark-checklist/SKILL.md) before trusting the number.
 - Broken skill mid-task → fix it in its own commit. Don't block. Don't silently work around it.
 - Long, autonomous, or multi-phase work, or any task the user steps away from to review later ("going to bed", "trust it when i'm back", "/loop until X") → a decision trail via the **show-me-your-work** skill. Commit it when stakes need an auditable record. Keep it local otherwise.
 
@@ -58,6 +59,7 @@ Read the leaf skill in full for any principle you apply. Each entry names when i
 - **Fix Root Causes** (**principle-fix-root-causes**). Debugging. Trace each symptom to its root cause, reproduce first, ask why until you reach it.
 - **Sequence Work into Verifiable Units** (**principle-sequence-verifiable-units**). Multi-step work (sweeps, migrations, runs of similar edits) and how you stack commits and PRs. Break work into small units that each end in a check, verify each before the next, and order delivery so the sequence proves itself.
 - **Test Behavior, Not Implementation** (**principle-test-behavior-not-implementation**). Writing, changing, or keeping a test. Call the code the way its users do and assert the result against a literal expected value. If the test would still pass when every imported function returns `undefined`, rewrite the assertion or delete the test.
+- **Explain the Number** (**principle-explain-the-number**). Before trusting or reporting a measured performance or eval result. Find its limiter and rule out errors, skipped work, settings, and noise.
 
 **Delegation**
 
@@ -82,9 +84,13 @@ Read the leaf skill in full for any principle you apply. Each entry names when i
 
 **Use `poteto-agent` for any subagent you spawn inside a playbook step** (code-writing delegates, ad-hoc helpers). In Claude Code, that is `subagent_type: "poteto-agent"`. Codex has no named agent types, so a `spawn_agent` call tells the subagent to read this skill in full first. Routed workflow skills (`how`, `why`, `interrogate`, `reflect`, `swarm`) set their own lanes for diverse-model review. Respect what the skill prescribes, don't override to `poteto-agent`. Tool names per harness are in `references/harness-tools.md`.
 
-**Defaults for every subagent call.** Run it in the background, give it file pointers not inlined context, and set an explicit model per role from `references/models.md`. Code delegates tier by difficulty. The hardest changes (cross-cutting design, gnarly concurrency, subtle algorithms) read the `hardest tasks` role, whether the task needs judgment on vague intent or is a precisely specified sequence of steps to execute to the letter. Trivial mechanical edits go to your code model. Each code playbook's model comes from its role (`feature, refactoring`, `bug-fix`, `perf-issue`, or `hillclimb`). Prose and judgment read `judgment and prose`. A lane on the other provider runs through the commands in `references/models.md`.
+**Defaults for every subagent call.** Run it in the background. Give it file pointers not inlined context, and set an explicit model per role from `references/models.md`. Code delegates tier by difficulty. The hardest changes (cross-cutting design, gnarly concurrency, subtle algorithms) read the `hardest tasks` role, whether the task needs judgment on vague intent or is a precisely specified sequence of steps to execute to the letter. Trivial mechanical edits go to your code model. Each code playbook's model comes from its role (`feature, refactoring`, `bug-fix`, `perf-issue`, or `hillclimb`). Prose and judgment read `judgment and prose`. A lane on the other provider runs through the commands in `references/models.md`.
 
-You own every subagent's work. Review the diff and write your own summary, don't pass through what it said. Interrupt-chained resumes silently drop directives, so fire a fresh subagent with consolidated scope rather than trusting a "done" summary. A second opinion is the same prompt against a different model. Agreement is high-signal.
+You own every subagent's work. Review the diff and write your own summary, don't pass through what it said. Interrupt-chained resumes silently drop directives, so fire a fresh subagent with consolidated scope rather than trusting a "done" summary. Start a new helper for each fix round, briefed with the round file and the branch head, instead of resuming last round's helper with its whole history. A second opinion is the same prompt against a different model. Agreement is high-signal.
+
+**Waiting as a subagent.** To wait for a background helper, end your turn. Its notification resumes you. After the root resumes you with SendMessage, your next turn end is your final report, so if work remains, report a short status and the root replies to resume you. Before your final report, stop every helper you started or name the ones still running.
+
+**One writer per worktree.** Parallel writers each get their own worktree and branch, and you merge them. Start a helper only after the commits it needs exist. A reader, such as an audit, a design runner, or a verify-only lane, gets a detached worktree at a pinned commit, never a writer's live one.
 
 ## Writing the reply
 
@@ -103,6 +109,10 @@ Every playbook ends with a reply written this way, with the landed commit hash o
 ## Comments
 
 Project source allows no comments; the `comments/no-comments` lint rejects every one. When code seems to need a comment, reshape it (rename, extract, or type it) until it doesn't, and file a known problem with the `backlog` skill instead of leaving a note. Deleting a comment without fixing what it explained is not a fix. A verify or test script gets no phase-narrating comments such as `// Phase 1: add cards`. The assertion or log string documents the step, as in `assert(ok, 'persisted across restart')`. This applies to every file you produce, including the delegate's diff.
+
+## Framework gaps
+
+Feature code under `src/features` uses only what the allowlists in `config/eslint/feature-policy.mjs` and `config/eslint/dom-policy.mjs` admit, and its views render only components from `@app/framework/design` and `@app/framework/ui`, never raw HTML or SVG. When a framework hook, primitive, or allowlist entry is missing, stop and ask the orchestrator for a framework addition; never write a workaround. The lint message for a missing capability says the same.
 
 ## Playbooks
 
@@ -124,6 +134,6 @@ A large or cross-cutting effort (a migration across many call sites, an ambitiou
 - **Eval.** Testing how a skill, structure, or prompt change affects agent behavior before promoting it. `playbooks/eval.md`.
 - **Autonomous run.** A long task to drive to completion without stopping ("run until done", "/loop until X"). `playbooks/autonomous-run.md`.
 - **Session pickup.** Resuming or taking over a prior agent's in-flight work from a transcript or a branch. `playbooks/session-pickup.md`.
-- **Pause safely.** Suspending in-flight work cleanly so it can be resumed, on an explicit pause, going offline, a harness restart, or imminent context compaction. The complement to Session pickup. Full steps: `playbooks/pause-safely.md`.
+- **Pause safely.** Suspending in-flight work cleanly so it can be resumed, on an explicit pause, going offline, a harness restart, imminent context compaction, or handing a live run to a new account or thread. The complement to Session pickup. Full steps: `playbooks/pause-safely.md`.
 - **Multi-phase plan.** Work that spans phases or several landing units. `playbooks/multi-phase-plan.md`.
 - **Landing on main.** Invoked at the end of every other playbook. `playbooks/landing-on-main.md`.

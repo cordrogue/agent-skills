@@ -11,7 +11,8 @@ not the original authors'.
 Source: [cursor/plugins](https://github.com/cursor/plugins), `pstack/` at
 commit `2eb7ed46`. License: MIT, `licenses/pstack.txt`.
 
-- `poteto-mode`, including its playbooks. `playbooks/landing-on-main.md`
+- `poteto-mode`, including its playbooks and `scripts/check-plan.mjs`
+  (adapted to the land-on-main plan skeleton). `playbooks/landing-on-main.md`
   replaces the upstream `opening-a-pr` playbook. `references/harness-tools.md`
   and `references/models.md` are new here.
 - Every `principle-*` skill.
@@ -21,7 +22,18 @@ commit `2eb7ed46`. License: MIT, `licenses/pstack.txt`.
   `interrogate`, `recall`, `reflect`, `show-me-your-work`, `swarm`, `tdd`,
   `teach`, `technical-writing`, `typescript-best-practices`, `unslop`, `why`.
   `why/references/sources/project-docs.md` is new here.
+- `create-verification-skill` and `maintain-verification-skill`, retargeted
+  at this repo's `verify-electron` skill, which takes its feature entry shape
+  from pstack.
 - `agents/poteto-agent.md`.
+- From commit `e43c7ee`: `correct` (unchanged), `benchmark-checklist`,
+  `principle-explain-the-number`, the split ownership, two ways to do one
+  task, importable internals, and hand-synced list red flags in
+  `architect/references/design-red-flags.md`, and the schema parsing
+  examples in `typescript-best-practices/references/patterns.md`.
+- From commit `2cbf585`: `poteto-help`, rewritten for this repo's skills,
+  harnesses, and landing on main.
+- `swarm/references/fix-rounds.md` is new here.
 
 ## Cursor
 
@@ -32,7 +44,9 @@ Source: [cursor/plugins](https://github.com/cursor/plugins) at commit
   `thermo-nuclear-review`, `thermo-nuclear-code-quality-review`,
   `agents/thermo-nuclear-review-subagent.md`, and
   `agents/thermo-nuclear-code-quality-review-subagent.md`.
-- From `cursor-team-kit/` (`licenses/cursor-team-kit.txt`): `deslop`.
+- From `cursor-team-kit/` (`licenses/cursor-team-kit.txt`): `deslop`,
+  `control-ui`, `control-cli`, and `verify-this`. `control-ui` and
+  `verify-this` add this repo's `verify-electron` path.
 
 ## Matt Pocock
 
@@ -44,7 +58,10 @@ Source: [mattpocock/skills](https://github.com/mattpocock/skills) at commit
 - `architect/references/codebase-design.md`, `DEEPENING.md`, and
   `DESIGN-IT-TWICE.md`, from his `codebase-design` skill.
 - `diagnosing-bugs`: the "build a feedback loop" section of his skill of the
-  same name.
+  same name, plus the redaction, minimization, and falsifiable hypothesis
+  sections from commit `24fe0ef`.
+- `prototype/LOGIC.md`: his clickable logic prototypes, from commit
+  `24fe0ef`.
 
 ## Emil Kowalski
 
@@ -77,5 +94,6 @@ These skills build on published ideas and name them where they are used:
 
 ## Written for this repo
 
-`alpha-build`, `backlog`, `run-app`, `testing`, `ui-preferences`,
-`user-communication`, `verify-electron`. MIT, see `LICENSE`.
+`alpha-build`, `backlog`, `repeat-mistakes`, `run-app`,
+`silent-workspace-test`, `testing`, `ui-preferences`, `user-communication`,
+`verify-electron` (including its `features/` map). MIT, see `LICENSE`.

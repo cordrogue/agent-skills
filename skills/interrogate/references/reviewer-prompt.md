@@ -20,7 +20,9 @@ If a spec path is given, read it. Flag where the change diverges from it or miss
 
 ## Code Under Review
 
-{DIFF_OR_FILES}
+{WORKTREE_AND_DIFF_COMMAND}
+
+Run the command in that worktree. Read each changed file in full and the code around the change.
 
 ## Review Rubric
 
@@ -56,11 +58,11 @@ For each finding, provide:
 
 - Restating what the code does without identifying a problem
 - Inflating severity. One `critical` that isn't costs trust in every other finding. Trace each issue end to end before you rate it
-- Praising the code. You're an adversary, not a cheerleader. If you find nothing wrong, say "no findings" and stop.
+- Praising the code. You're an adversary, not a cheerleader. If you find nothing wrong, list what you checked, then say "no findings".
 
 ## Output
 
-Return your findings as a structured list. If you have zero findings, say so. An empty review is a valid outcome.
+Return your findings as a structured list. If you have zero findings, say so and list what you checked. An empty review is a valid outcome.
 
 ```
 ## Findings

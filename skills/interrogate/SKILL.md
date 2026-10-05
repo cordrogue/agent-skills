@@ -18,7 +18,7 @@ Identify what to review from context:
 - If on a feature branch, run `git diff main...HEAD` (or the appropriate base branch) for the full changeset
 - If the user's message references recent work, gather the relevant files
 
-Package the diff (or file contents) plus any surrounding context files the reviewers need to understand the code.
+Give reviewers a worktree at the head under review and the exact `git diff <base>...<head>` command to run there, or the file paths. Reviewers read the surrounding code themselves, which a pasted diff hides. For an unmerged branch, the worktree is a detached one at its head, per `models.md`.
 
 ## Step 2, State the Intent
 
@@ -44,11 +44,11 @@ For each reviewer:
 - Route it per `models.md`. A reviewer whose model runs on the parent's provider is a native subagent. The other runs the cross-provider command.
 - Access: read-only.
 
-If a reviewer's model is unavailable, record it as a dropout and say so. Never substitute another model. Do not block the review on a dropout.
+If a reviewer's model is unavailable, record it as a dropout and say so. A reply of "No findings." that names nothing it checked is also a dropout. Never substitute another model. Do not block the review on a dropout.
 
 Read `references/reviewer-prompt.md` and fill in the template with:
 1. The stated intent
-2. The diff or file contents
+2. The worktree path and the `git diff` command, or the file paths
 3. The review rubric from `references/rubric.md`
 4. The code-quality lens from `references/code-quality-review.md`
 5. The spec path from Step 2, or "none"

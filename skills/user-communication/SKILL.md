@@ -18,6 +18,7 @@ The developer directs the product but is not a professional programmer. They are
 
 - Plain language. Explain a technical term the first time it appears, or use a plain word instead.
 - Lead with the outcome: what changed, what it means for the developer, and what is left.
+- A status message on long-running work opens with one of running, waiting on you, or done. When you have applied defaults for the developer, point to the running list of them.
 - For design tradeoffs, write prose that shows how you weigh the options and how the developer might think about them. Then, if decisions remain, end with a short numbered list of questions, each with your default in brackets, so the developer only answers where they disagree.
 - Save multiple-choice question forms (`AskUserQuestion`) for quick, well-bounded choices.
 - Write through the `unslop` skill. No em dashes.

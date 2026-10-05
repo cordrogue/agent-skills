@@ -24,6 +24,8 @@ Build a real mental model of every system the new code touches. Run the **how** 
 
 Naming a file isn't grounding. Produce the traced model `how` prescribes. If the design redefines ownership or layering, also run the **why** skill on the existing shape so the rationale becomes a constraint, not a guess.
 
+Current code shows how the app works today, not how the domain works. Before sketching, list the domain assumptions the design takes from current code, such as "an event happens at a single moment", and ask the operator to confirm them. Under a full-autonomy grant, apply each as a default the operator can reverse.
+
 Skip Phase A only when the work is genuinely greenfield with no surrounding system to integrate.
 
 ## Phase B: Sketch
@@ -34,7 +36,7 @@ Take the runners from the `architect runners` role in [`models.md`](../poteto-mo
 
 Design it twice. Require at least two structurally distinct candidates before synthesis, even when the first looks sufficient. This is the **exhaust-the-design-space** principle skill made concrete. Whole-shape alternatives, not point fixes inside one shape.
 
-Screen every candidate against [`references/design-red-flags.md`](references/design-red-flags.md) before synthesis. Reject or revise shallow modules, information leakage, temporal decomposition, and pass-through methods.
+Screen every candidate against [`references/design-red-flags.md`](references/design-red-flags.md) before synthesis. Reject or revise every red flag in that reference, including shallow modules, information leakage, temporal decomposition, pass-through methods, split ownership, competing task paths, importable internals, and hand-synced lists.
 
 Compare viable candidates on interface depth. Prefer the design that hides more complexity behind a smaller, simpler public surface. A rich interface can keep call chains short by concentrating capability instead of scattering it across layers.
 

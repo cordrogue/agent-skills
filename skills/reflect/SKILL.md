@@ -49,6 +49,8 @@ Sanity-check the synthesizer's Accepted list. For any item that would be enforce
 
 ### 5. Apply
 
+Write every edit and backlog line in your own worktree off `main`, per [Landing on main](../poteto-mode/playbooks/landing-on-main.md).
+
 Before applying any Accepted edit, present the synthesizer's full Accepted/Rejected/Backlog output to the user and wait for explicit approval. The user picks which subset to apply and may redirect routings. Skill changes affect every future agent in this repository. Do not auto-apply.
 
 Backlog items file to `docs/BACKLOG.md` automatically, one line each under the closest group, per that file's header. Only the Accepted list waits for approval.

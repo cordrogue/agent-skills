@@ -1,15 +1,49 @@
 #!/usr/bin/env bash
-# Append a well-formed row to a show-me-your-work decision log (TSV).
+# Append well-formed rows to a show-me-your-work decision log (TSV).
 # Usage: log.sh <logfile> <phase> <decision> <why> <evidence> <result>
+#        log.sh <logfile> < rows
+# The second form reads several rows from stdin, one per line, each with the
+# five cells (phase, decision, why, evidence, result) separated by tabs.
 set -euo pipefail
 
-if [ "$#" -ne 6 ]; then
+usage() {
 	printf 'usage: log.sh <logfile> <phase> <decision> <why> <evidence> <result>\n' >&2
+	printf '       log.sh <logfile> < rows   (one row per line: phase, decision, why, evidence, result, tab-separated)\n' >&2
 	exit 1
+}
+
+if [ "$#" -ne 6 ] && { [ "$#" -ne 1 ] || [ -t 0 ]; }; then
+	usage
 fi
 
 logfile="$1"
 shift
+
+# Read and check every stdin row before writing, so one malformed line
+# leaves the log untouched.
+tab=$'\t'
+rows=()
+if [ "$#" -eq 0 ]; then
+	line_number=0
+	while IFS= read -r line || [ -n "$line" ]; do
+		line_number=$((line_number + 1))
+		line="${line%$'\r'}"
+		if [ -z "${line//[[:space:]]/}" ]; then
+			continue
+		fi
+		tabs="${line//[!$tab]/}"
+		if [ "${#tabs}" -ne 4 ]; then
+			printf 'log.sh: line %d has %d cells, not 5 tab-separated cells (phase, decision, why, evidence, result). Nothing was written.\n' \
+				"$line_number" "$((${#tabs} + 1))" >&2
+			exit 1
+		fi
+		rows+=("$line")
+	done
+	if [ "${#rows[@]}" -eq 0 ]; then
+		printf 'log.sh: no rows on stdin. Nothing was written.\n' >&2
+		exit 1
+	fi
+fi
 
 logdir="$(dirname "$logfile")"
 if [ -n "$logdir" ] && [ "$logdir" != "." ] && [ ! -d "$logdir" ]; then
@@ -37,6 +71,21 @@ clean() {
 		*) printf '%s' "$v" ;;
 	esac
 }
-printf '%s\t%s\t%s\t%s\t%s\t%s\n' \
-	"$ts" "$(clean "$1")" "$(clean "$2")" "$(clean "$3")" "$(clean "$4")" "$(clean "$5")" \
-	>> "$logfile"
+append_row() {
+	printf '%s\t%s\t%s\t%s\t%s\t%s\n' \
+		"$ts" "$(clean "$1")" "$(clean "$2")" "$(clean "$3")" "$(clean "$4")" "$(clean "$5")" \
+		>> "$logfile"
+}
+
+if [ "${#rows[@]}" -eq 0 ]; then
+	append_row "$@"
+fi
+for row in "${rows[@]}"; do
+	cells=()
+	rest="$row"
+	while [[ "$rest" == *"$tab"* ]]; do
+		cells+=("${rest%%"$tab"*}")
+		rest="${rest#*"$tab"}"
+	done
+	append_row "${cells[@]}" "$rest"
+done

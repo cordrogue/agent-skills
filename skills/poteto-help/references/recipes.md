@@ -1,0 +1,47 @@
+# Prompts worth copying
+
+Swap in the real paths, skills, and done checks. Informal wording works. These use Claude Code's `/<skill>` form. In Codex, write "use <skill>" instead.
+
+## Understand
+
+- `/poteto-mode read <thread or doc>. restate the underlying issue in your own words, in plain english.`
+- `/poteto-mode investigate why <symptom>. give me what we know, what data you used, and your best hypotheses. don't change any code yet.`
+- `use /how to understand <subsystem>. then use /why to find out why it broke recently.`
+- `/recall my work on <topic> from last week, then read <backlog item>.`
+- `/teach me why you implemented it this way and not <other way>. what did you trade off?`
+- `/poteto-mode take over this branch. read the decision log, find what's done, and continue. don't redo finished work.`
+
+## Build
+
+- Bug: `/poteto-mode <symptom>. repro first, then fix and verify.`
+- Bug in the app: `/poteto-mode repro this in the built app on the sample project. if it repros on main, fix it and show me before and after screenshots.`
+- Bug with a cheap test: `/poteto-mode repro <bug> first. if there's a cheap test path, /tdd it. then fix and rerun.`
+- Feature: `/poteto-mode add <behavior>. <current behavior> stays the same. verify both in the built app.`
+- Refactor: `/poteto-mode move <code> into one module, zero behavior change. record the current behavior first and prove it's unchanged after.`
+- Perf: `/poteto-mode <operation> takes <time> on the sample project. trace it, fix the measured cause, show me before and after.`
+
+## Design and plan
+
+- `/poteto-mode prototype a few options for <feature>. put them behind the prototype picker and send me screenshots of each.`
+- `/poteto-mode we need <feature>. /architect it first, and answer open questions with prototypes. let me review before proceeding.`
+- `/poteto-mode write a tutorial for how i would use <framework addition> first. then /teach me why it beats the current way.`
+- `grill me on this plan before we build it.`
+- `ask /arena for a second opinion on this thread and our approach.`
+- `/poteto-mode turn this design into a plan. small units that each land on main with their own proof.`
+- `/poteto-mode plan the migration of <code> to <target>. small verifiable units. the result must match the original exactly, bugs included.`
+
+## Review and land
+
+- `/interrogate the whole branch, but skeptically. don't change anything yet. no nitpicks unless it's a real bug or regression.` Read the dismissals too.
+- `/thermos this branch.` The harshest review, for a change that has to be right.
+- `/blast-radius of <change>. what could it break outside the diff?`
+- `/poteto-mode land it on main. small ordered commits.`
+
+## Away and back
+
+- `/poteto-mode im going to bed. <goal> in a fresh worktree off main. done means <checks>. keep a decision log. don't ask me before committing. /loop until done. if you're truly stuck after a few hours, stop and write up why.`
+- `/show-me-your-work catch me up on what you did last night.` Read its Attention section first.
+- `/poteto-mode pause safely. i'm about to restart t3 code.`
+- `/reflect capture what we learned so the next run doesn't repeat it.` Approve only edits that change a future decision.
+- `/correct agents keep <mistake>.`
+- `/bro` restates the last reply in plain words.

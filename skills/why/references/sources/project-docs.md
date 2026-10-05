@@ -7,7 +7,7 @@
 - Plans, specs, reviews, and remediation papers in `docs/work/`
 - Out-of-scope problems in `docs/BACKLOG.md`
 - Domain vocabulary and terms to avoid in `docs/GLOSSARY.md`
-- Product intent in `docs/PRODUCT.md`, `docs/FEATURES.md`, `docs/PLAN.md`, and `docs/TODO.md`
+- Product intent in `docs/PRODUCT.md`, `docs/FEATURES.md`, `docs/IDEAS.md`, and `docs/TODO.md`
 - The index of all of these in `docs/README.md`
 
 Here, `docs/` is where "why" lives in long form before it becomes code. A significant change usually has a plan or a decision file.

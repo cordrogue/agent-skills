@@ -9,6 +9,10 @@ description: "Always load when a bug, failure, or regression needs reproducing o
 
 In `poteto-mode`, this is step 1 of the Bug fix playbook. Afterwards, find the cause with `principle-fix-root-causes` and land the failing check before the fix (`tdd`).
 
+## Redact captured evidence
+
+Replace secrets with `<REDACTED>` before showing commands, output, or artifacts. Read credentials from environment variables so they stay out of the command text. Quote only the signal-carrying lines from HAR files, logs, and payloads, which may contain auth headers or tokens. Request redacted captures when the developer supplies evidence.
+
 ## Ways to build one, in roughly this order
 
 1. **Failing test** at whatever seam reaches the bug (`npm test -- <path>`; see the `testing` skill).
@@ -36,13 +40,22 @@ A 30-second flaky loop is barely better than none; a 2-second deterministic one 
 
 **When you cannot build a loop:** say so, list what you tried, and ask the developer for what would reproduce it (the project state, a screen recording, exact steps). Don't move on to hypotheses without a loop.
 
+## Minimize the reproduction
+
+After reproducing the exact symptom, remove inputs, configuration, data, callers, or steps one at a time. Rerun after each removal and keep it only when the same failure remains. Stop when every remaining element contributes to the failure. For a flaky bug, compare reproduction rates and keep the trigger stable. Retain the original scenario for verification after the fix.
+
+## State falsifiable hypotheses
+
+After the reproduction is minimized, rank competing hypotheses and state a prediction for each: "If X is the cause, changing Y should remove the failure, or changing Z should make it worse." Discard claims with no observable prediction. Share the ranked list, then test it without waiting for approval. Each probe changes one variable and rules hypotheses in or out. The Bug fix playbook uses this method for its cause search.
+
 ## Done when
 
-You can name **one command** you have **already run** (show it and its output) that is:
+You can name **one command** you have **already run** (show it and its redacted output) that is:
 
 - **Red-capable:** it drives the actual bug's code path and asserts the exact symptom, so it goes red on this bug and green once fixed.
 - **Deterministic:** same verdict every run (for flaky bugs, a pinned, high reproduction rate).
 - **Fast:** seconds, not minutes.
 - **Agent-runnable:** it runs unattended.
+- **Minimal:** each remaining input or step contributes to the exact failure; the original scenario is retained for final verification.
 
 If you catch yourself reading code to build a theory before this command exists, stop. No red-capable command, no hypotheses.

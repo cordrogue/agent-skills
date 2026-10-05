@@ -28,10 +28,14 @@ Or put them in `~/.claude/skills` and `~/.codex/skills` to use them everywhere.
 
 **Base: pstack, by Lauren Tan.** `poteto-mode` is the entry point. It matches a task to a
 playbook and reads the `principle-*` skills when a step needs them. Also from
-pstack: `architect`, `arena`, `automate-me`, `blast-radius`, `bro`,
-`figure-it-out`, `how`, `interrogate`, `recall`, `reflect`,
-`show-me-your-work`, `swarm`, `tdd`, `teach`, `technical-writing`,
-`typescript-best-practices`, `unslop`, `why`.
+pstack: `architect`, `arena`, `automate-me`, `benchmark-checklist`,
+`blast-radius`, `bro`, `correct`, `figure-it-out`, `how`, `interrogate`,
+`poteto-help`, `recall`, `reflect`, `show-me-your-work`, `swarm`, `tdd`,
+`teach`, `technical-writing`, `typescript-best-practices`, `unslop`, `why`.
+
+**Verification, from pstack and Cursor:** `control-ui`, `control-cli`,
+`verify-this`, `create-verification-skill`, and
+`maintain-verification-skill`.
 
 **Review, from Cursor:** `thermos`, `thermo-nuclear-review`,
 `thermo-nuclear-code-quality-review`, and `deslop`.
@@ -42,8 +46,9 @@ pstack: `architect`, `arena`, `automate-me`, `blast-radius`, `bro`,
 
 **Design, from Emil Kowalski:** `prototype` and `design-foundations`.
 
-**Written for this repo:** `alpha-build`, `backlog`, `run-app`, `testing`,
-`ui-preferences`, `user-communication`, `verify-electron`. These name
+**Written for this repo:** `alpha-build`, `backlog`, `repeat-mistakes`,
+`run-app`, `silent-workspace-test`, `testing`, `ui-preferences`,
+`user-communication`, `verify-electron`. These name
 one app's scripts, docs, and sample data, so expect to rewrite them for
 your project.
 

@@ -4,7 +4,7 @@
 
 The one playbook where the Laziness Protocol's "smallest change" and the verification bar invert. Speed over polish, code quality does not matter, no planning. The rigor is in picking the right design cheaply. Propose variations the user didn't ask for, throw an approach away and try another.
 
-For a visual UI decision inside the app, read and follow `.agents/skills/prototype/SKILL.md` instead. It builds the variants on a dev-only route with real project data. The steps below cover behavioral, timing, or logic forks, and visual work outside the app.
+For a visual UI decision inside the app, read and follow `.agents/skills/prototype/SKILL.md` instead. It builds the variants on a dev-only route with real project data. For a state-model question that the developer should explore by clicking actions, follow `.agents/skills/prototype/LOGIC.md`. The steps below still cover timing and scripted behavioral forks, and visual work outside the app.
 
 1. Scope the decision the prototype exists to make: which layout, which interaction, which density, or for an empirical fork which behavior, timing, or approach. No decision means no prototype. Route to Feature.
 2. Gather references when the design space is open. Search for prior art, summarize a moodboard of themes, palettes, and layouts, let the user pick directions before building. Skip when the direction is set.

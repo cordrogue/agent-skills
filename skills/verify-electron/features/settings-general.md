@@ -1,0 +1,52 @@
+# General settings
+
+Settings, General, holds project-level controls. It shows the open project's folder and database, runs the desktop project commands, lists recent projects, sets whether the add-card picker includes records absent at the viewed date, and pauses or resumes automation writes. World time lives on the same page in [settings-world-time.md](settings-world-time.md).
+
+## Sub-features
+
+- `settings-tabs` switches between General and Change history.
+- `settings-files` shows the project folder and database paths.
+- `settings-project` runs Back up, Reveal, Open, and New.
+- `settings-recent` reopens a recent project.
+- `settings-picker` lists or hides absent records in the add-card picker.
+- `settings-automation` pauses and resumes automation writes.
+
+## How to get to it (user POV)
+
+- The "Settings" activity-bar button, or "Settings" in the command palette. Route `#/settings`.
+- The top bar has tabs "General" and "Change history". Change history is `#/settings?tab=history`.
+- General has the heading "The Sample World" with "Back up", "Reveal", "Open", and "New", then "Project files", World time, "Workspace", "Automation", and "Recent Projects".
+
+## Driving it with verify-electron
+
+Preconditions:
+
+- A fresh `start`, then `doctor`. Commands below are arguments to `node scripts/verify-electron.mjs`.
+- The read-only views are `eval 'window.app.getCurrentProject()'`, `eval 'window.app.getAutomationSettings({})'` (`writePaused` false), and `eval 'JSON.parse(localStorage.getItem("app-application-shell")).state.showAbsentRecordsInPicker'` (false).
+- Fixture for the picker is "Mara Venn", who does not exist yet at tick 0.
+
+- **Tabs.** `shot --route '#/settings?tab=history&revision=1'`, then `click --role tab --name 'General'`. The route becomes `#/settings`, dropping `tab`, `revision`, and `worldTick`.
+- **Project files.** `click --role DisclosureTriangle --name 'Project files'`. "Project folder" and "Database" show the session's `.tmp-vite/verify-electron/project` paths, matching `rootPath` and `databasePath` from `getCurrentProject()`.
+- **Back up.** `click --role button --name 'Back up' --dismiss` lists a `save` dialog "Back Up Project" with `answer:null` and writes nothing. `click --role button --name 'Back up' --file "$HOME/.cache/agent-swarm/<dir>/settings-backup"` writes a full project copy there, named "The Sample World backup <date> <time>" in its `app.project.json`. Poll the folder from the shell, then any command lists `message` "Backup complete" answered "OK".
+- **Open.** `click --role button --name 'Open' --dismiss` lists an `open` dialog with `answer:null`, and `getCurrentProject()` is unchanged. `click --role button --name 'Open' --file "$HOME/.cache/agent-swarm/<dir>/settings-backup"` switches to that project. `getCurrentProject()` returns its name and rootPath, and a project opened for the first time lands on `#/workspace` with "Empty workspace".
+- **New.** `click --role button --name 'New' --file "$HOME/.cache/agent-swarm/<dir>/new-world"` on an empty folder writes `app.project.json`, `app.sqlite`, `world`, `manuscript`, and `.app` there, then switches to "Untitled World" at `#/workspace?worldTick=0`. Settings shows story present "Dawnmere 1, Year 1 · 00:00". `--dismiss` changes nothing.
+- **Recent projects.** After those, `snapshot --role main` lists buttons such as `Untitled World /home/<user>/.cache/agent-swarm/<dir>/new-world` `[disabled]` for the open project and `The Sample World backup <date> <time> /home/<user>/.cache/agent-swarm/<dir>/settings-backup`. Clicking the enabled one switches back, returns to its last route (`#/settings`), and `listRecentProjects()` puts it first. `listCharacters({})` has the sample's 10.
+- **Reveal.** verified-unreachable. It opens the desktop file manager on the developer's screen, so it was not clicked. Check it in a visible window with the `silent-workspace-test` skill.
+- **Picker on.** `click --role checkbox --name 'List records absent at the viewed date when adding cards'`. The snapshot shows it `[checked]` and the localStorage read returns true. It stays checked after `reload`, and the localStorage read still returns true. Then `shot --route '#/workspace?worldTick=0'`, `click --role button --name 'Add card'`, and `type 'Mara'`. Dialog "Add workspace card" lists `option "Mara Venn State unknown"`, plus events marked "Not yet created".
+- **Picker off.** `press Escape`, return to Settings, and click the checkbox again. The same search at `worldTick=0` lists no Mara Venn and no "Not yet created" options.
+- **Automation.** `click --role button --name 'Pause writes'` and `wait --role button --name 'Resume writes'`. `getAutomationSettings({})` returns `writePaused` true. `click --role button --name 'Resume writes'` brings back "Pause writes" and `writePaused` false.
+
+## Gotchas
+
+- There is no `tab=general`. General is the route without `tab`.
+- The session's own project opens without entering Recent Projects, so a fresh session shows "No recent projects yet." After switching away, return with `click --role button --name 'Open' --file <session project path>` before `stop`, or later recipes run against the wrong project.
+- Back up, Open, and New write outside the session folder, and `stop` does not delete them. Remove `$HOME/.cache/agent-swarm/<dir>` after copying evidence.
+- `listRecentProjects()` takes no argument. Passing `{}` fails with "Please correct the highlighted fields."
+- The picker preference lives in localStorage, not the project. Read it before assuming the default.
+- Pause status alone does not prove an MCP write is refused. That needs an automation client.
+
+## Source and tests
+
+- `src/renderer/features/settings/SettingsPage.tsx`, `RecentProjectsSettings.tsx`, `useSettingsProjectCommands.ts`, and `src/renderer/store/applicationShellStore.ts`.
+- `src/main/project-service.ts`, `src/main/native-dialogs.ts`, `src/shared/project-ipc.ts`.
+- `npm test -- src/renderer/features/settings/SettingsPage.test.tsx src/renderer/features/settings/useSettingsProjectCommands.test.tsx src/main/project-service.test.ts`.
