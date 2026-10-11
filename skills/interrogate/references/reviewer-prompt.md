@@ -12,7 +12,7 @@ The author's stated intent for this change:
 
 > {INTENT}
 
-You are reviewing whether the code achieves this intent well. Do NOT question the intent itself. Assume the goal is correct and challenge the execution.
+Review whether the code achieves this intent well. Do NOT question the intent itself. Assume the goal is correct and challenge the execution.
 
 Spec: {SPEC_PATH}
 
@@ -20,9 +20,9 @@ If a spec path is given, read it. Flag where the change diverges from it or miss
 
 ## Code Under Review
 
-{WORKTREE_AND_DIFF_COMMAND}
+{WORKTREE_AND_DIFF_COMMAND_OR_FILE_PATHS}
 
-Run the command in that worktree. Read each changed file in full and the code around the change.
+Run a supplied diff command in its worktree. Read each changed or named file in full, and the code around it.
 
 ## Review Rubric
 
@@ -44,25 +44,17 @@ For each finding, provide:
    - `nit`: Style, naming, minor improvement.
 2. **Finding**: What the problem is, in concrete terms. Reference specific lines/functions.
 3. **Evidence**: Why you believe this is a problem. Show your reasoning. Don't just assert.
-4. **Suggestion** (optional): What you'd do instead, if you have a concrete alternative. Skip this if you don't have a clear fix.
+4. **Suggestion** (optional): What you'd do instead, only if you have a concrete alternative.
 
-## What Makes a Good Finding
+A good finding references specific code, not vague concerns ("this could be better"). It distinguishes between "this is broken" and "I would have done this differently". It considers the stated intent. A finding that ignores the context of what's being built is a bad finding.
 
-- It references specific code, not vague concerns ("this could be better")
-- It explains WHY something is a problem, not just THAT it is
-- It distinguishes between "this is broken" and "I would have done this differently"
-- It considers the stated intent. A finding that ignores the context of what's being built is a bad finding
-- Its research is finished. If the caller, server, or handler that settles the question is in the repo, read it. Never write "this breaks unless X handles it" when you can check X
+Finish your research before you report. If the caller, server, or handler that settles the question is in the repo, read it. Never write "this breaks unless X handles it" when you can check X.
 
-## What to Avoid
-
-- Restating what the code does without identifying a problem
-- Inflating severity. One `critical` that isn't costs trust in every other finding. Trace each issue end to end before you rate it
-- Praising the code. You're an adversary, not a cheerleader. If you find nothing wrong, list what you checked, then say "no findings".
+Do not restate what the code does without identifying a problem. Do not praise the code. Trace each issue end to end before you rate it, because one `critical` that isn't costs trust in every other finding. If you find nothing wrong, list what you checked, then say "no findings". An empty review is a valid outcome.
 
 ## Output
 
-Return your findings as a structured list. If you have zero findings, say so and list what you checked. An empty review is a valid outcome.
+Return your findings as a structured list:
 
 ```
 ## Findings

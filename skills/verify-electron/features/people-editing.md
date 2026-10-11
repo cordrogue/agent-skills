@@ -1,53 +1,47 @@
 # Create and edit a person
 
-A writer adds a character from the Characters collection and records dated changes to an existing person. Saving a change keeps the editor open, an unfinished new draft asks before it is discarded, and a portrait can be cleared from a date onward.
+A writer adds a character from the People collection and records dated changes or corrections with the framework form, including portraits and death as the status Dead.
 
 ## Sub-features
 
-- `person-create` saves a new character and opens its profile.
-- `person-change` saves a dated change to an existing character and keeps the editor open.
-- `person-discard` asks "Discard this new character draft?" before dropping a draft.
-- `person-portrait` chooses or replaces a portrait from a file, from the change date onward.
-- `person-portrait-clear` clears a portrait from the change date while earlier dates keep it.
-- `person-end` ends a character at the viewed date after a confirm.
+- `person-create` saves a new character and opens its page.
+- `person-change` saves a dated change with "Change from this time".
+- `person-correct` rewrites the value at the viewed date with "Correct this value".
+- `person-discard` asks before dropping a draft.
+- `person-portrait` chooses a portrait, or restores an earlier one under "Prior images".
+- `person-death` records a death with the toolbar "End", which sets the status Dead at the chosen date.
+- `person-never-ends` sets a character to never end, so no death estimate shows.
 
 ## How to get to it (user POV)
 
-- Characters collection toolbar, "Add character". The toolbar title becomes "New character".
-- A person's toolbar, "Add change" (pencil icon). The editor toolbar shows "Save", "Cancel", and "End".
-- The date group is "Create this character starting at" on create and "Change from this date onward" on edit.
+- The People collection toolbar has "New character" and "Show dead".
+- A person's toolbar has "End", "More" (holding "Remove"), "Edit" and "History".
+- The form has textboxes "Name", "Summary", "Gender", "Role", "Current situation" and "Notable traits", the combobox "Type" (Character, Deity), the groups "Portrait", "Origin", "Affiliation" and "Home", the date group "Born", and the checkbox "Never ends". Location, Influence and the pin are not in the form; the pin is set on the map or in the Position section.
 
 ## Driving it with verify-electron
 
 Preconditions:
 
-- A fresh `start`. Prefix every command with `node scripts/verify-electron.mjs`. Viewed time is tick `20000000`.
-- "Verify tide surveyor" is a new test record. On a fresh sample it gets id `11`; resolve it by name after saving.
+- "Verify tide surveyor" is a new test record. After saving, resolve its id with `eval '(async () => (await window.appHost.invoke("records.character.list", {}, {at:20000000})).output.items.find((c) => c.title === "Verify tide surveyor").id)()'`.
 
-- **Open the form.** Run `click --role button --name 'Characters'` and `click --role button --name 'Add character'`. `snapshot` shows heading "New character", `button "Save" [disabled]`, and textboxes "Name", "Summary", "Gender", "Role", "Status", and "Notable traits".
-- **Fill it.** Run `click --role textbox --name 'Name'` and `type 'Verify tide surveyor'`. Repeat for "Summary" with `Checks doubtful bearings.`, "Role" with `Survey assistant`, and "Notable traits" with `Patient and observant.`.
-- **Save.** Run `click --role button --name 'Save'` and `wait --role heading --name 'Verify tide surveyor'`. The route becomes `#/people/11`. `shot --name person-created` shows the summary, Role, Traits, and "Position unknown.".
-- **Confirm storage.** Run `eval '(async () => { const c = (await window.app.listCharacters({asOfTick:20000000})).find(c => c.name === "Verify tide surveyor"); return [c.id, c.summary, c.role, c.notableTraits]; })()'`. It returns `[11, "Checks doubtful bearings.", "Survey assistant", "Patient and observant."]`.
-- **Record a change.** Run `click --role button --name 'Add change'`, `click --role textbox --name 'Summary'`, `press Control+a`, `type 'Rechecks the northern bearings.'`, and `click --role button --name 'Save'`. Run `wait --until '(async () => (await window.app.getCharacter({id:11,asOfTick:20000000})).record.summary === "Rechecks the northern bearings.")()'`. The editor stays open with "Save" disabled and the status "Editing".
-- **Leave the editor.** Run `click --role button --name 'Cancel'`. The profile shows the new summary and no dialog appears.
-- **Discard a draft.** Run `click --role button --name 'Characters'`, `click --role button --name 'Add character'`, `click --role textbox --name 'Name'`, `type 'Discard surveyor'`, and `click --role button --name 'Cancel'`. `dialog "Discard this new character draft?"` appears with "Keep editing" focused and "Discard".
-- **Keep, then discard.** Run `click --role button --name 'Keep editing'`. The Name textbox still holds "Discard surveyor". Run `click --role button --name 'Cancel'` and `click --role button --name 'Discard'`. The Characters heading returns. `eval '(async () => (await window.app.listCharacters({asOfTick:20000000})).some(c => c.name === "Discard surveyor"))()'` returns `false`.
-- **Clear a portrait.** Open Mara with `click --role button --name 'Open Mara Venn, Alive'`, then `click --role button --name 'Add change'`. The Portrait group shows "Replace portrait" and "Clear from this date". Run `click --role button --name 'Clear from this date'` and `click --role button --name 'Save'`.
-- **Confirm the portrait.** Run `eval '(async () => [(await window.app.getCharacter({id:1,asOfTick:20000000})).record.portraitAssetPath, (await window.app.getCharacter({id:1,asOfTick:19999999})).record.portraitAssetPath])()'`. It returns `[null, "app-asset://characters/65b4…png"]`. Run `click --role button --name 'Cancel'`; the profile has no portrait.
-- **Choose a portrait.** In the Add character form, after Name, run `click --role button --name 'Choose portrait' --file "$HOME/.cache/agent-swarm/<dir>/<image>.png"`. `dialogs` lists an `open` dialog answered with that path. Save; `getCharacter({id:11,asOfTick:20000000}).record.portraitAssetPath` is `app-asset://characters/<sha256>.png` of that file.
-- **Replace a portrait.** On a fresh Mara, Add change, `click --role button --name 'Replace portrait' --file <png>`, and Save. `portraitAssetPath` changes at `20000000` and stays `65b4…png` at `19999999`. Without `--file` the picker cancels and nothing changes.
-- **End, cancelled.** On Mara's Add change, `click --role button --name 'End' --dismiss`. The confirm "End this character at the viewed story date, Bloomtide 1, Year 42 · 21:20? The change date above applies only to Save." is answered `false`. Mara still reads "Alive · Age 33" and `getCharacter({id:1,asOfTick:20000000}).record.existsToTick` stays `null`.
-- **End.** Repeat without `--dismiss`. The profile reads "Dead · Age 33" with Death "Bloomtide 1, Year 42". `getCharacter({id:1,asOfTick:20000000}).record` has `existsToTick` 20000000 and `deathDate.tick` 20000000, and the head revision's `commandKey` is `character.endAtTick`. Run it last.
+- **Open the form.** `click --role button --name 'People'`, then `click --role button --name 'New character'`. `snapshot` shows the form with `button "Save" [disabled]` and "Born" set to the viewed date.
+- **Fill it.** `click --role textbox --name 'Name'` and `type 'Verify tide surveyor'`. Repeat for "Summary" with `Checks doubtful bearings.`, "Role" with `Survey assistant`, and "Notable traits" with `Patient and observant.`.
+- **Save.** `click --role button --name 'Save'` and `wait --role heading --name 'Verify tide surveyor'`. The route becomes `#/people/<id>`, and `shot --name person-created` shows "Alive · Age 0", the summary, Role and the "Traits" section.
+- **Confirm storage.** `eval '(async () => { const c = (await window.appHost.invoke("records.character.get", {id:<id>}, {at:20000000})).output; return [c.summary, c.role, c.traits]; })()'` returns `["Checks doubtful bearings.", "Survey assistant", "Patient and observant."]`.
+- **Record a change.** At a later date, `click --role button --name 'Edit'`, replace "Summary" with `Rechecks the northern bearings.`, and `click --role button --name 'Change from this time'`. The page shows the new summary there and the old one at the creation date.
+- **Discard a draft.** `click --role button --name 'People'`, `click --role button --name 'New character'`, type a Name, and `click --role button --name 'Cancel'`. A dialog asks "Discard this new character draft?" with "Keep editing" and "Discard".
+- **Restore a portrait.** On Mara, `click --role button --name 'Edit'`. The group "Portrait" shows her portrait, plus "Prior images" and "Restore" when she has earlier ones. Choose a file with `click --role button --name 'Choose portrait' --file "<png>"` and Change from this time. `records.character.get` returns `portrait` `app-asset://characters/<sha256>.png` at the viewed date and the earlier one before it.
+- **Death.** Run this last. On Mara, `click --role button --name 'End'`. The dialog "End" has "Date", set to the viewed date, and "Note"; confirm with its "End" button. "Linked to Mara Venn" then lists every record that still links to her, such as her notes and the Brineglass Compass, with "Move" and "Remove"; close it. Dates read Status "Dead from Bloomtide 1, Year 42 · 21:20", the header reads "Dead · Age 33", Facts show Death "Bloomtide 1, Year 42 · 21:20", and the toolbar offers "Mark alive". `records.character.list` without `show:"all"` no longer holds her at `20000000`.
 
 ## Gotchas
 
-- The edit action is "Add change", not "Edit".
-- Mara's Place combobox is disabled and named "Place Location follows dated map positions. Set it in Maps.".
-- "End" uses the viewed date, not the editor's change date, and the character stays in `listCharacters` at that tick.
+- Edit opens the form at the viewed date; there is no separate change date.
+- A change at the person's own start date is refused; use Correct this value there.
+- Affiliation and Origin have no overlap rule, so they accept a faction or place that is not active at the date.
+- Home is checked against the place's life: a Home that ends while the person lives there shows a Continuity warning.
 
 ## Source and tests
 
-- `src/renderer/features/characters/CharacterEditor.tsx`, `CharacterPage.tsx`.
-- `src/renderer/features/shared/RecordFields.tsx`, `RecordPageView.tsx`, `recordPage.ts` (End confirmation).
-- `src/renderer/components/app-shell/UnsavedChanges.tsx`; `src/backend/services/character-service.ts`.
-- `npm test -- src/renderer/features/characters/CharacterPage.test.tsx src/renderer/features/shared/recordPage.test.tsx src/renderer/components/app-shell/UnsavedChanges.test.tsx`.
+- `src/features/character/contract.ts` (labels, limits, statuses, the 80-year default for a Character and none for a Deity).
+- `src/framework/ui/pages/RecordEditing.tsx`, `RecordForm.tsx`, `StatusDialog.tsx`, `EndImpactDialog.tsx`, `PriorImages.tsx`.
+- `npm test -- src/features/character src/app/record-kinds.test.ts`.

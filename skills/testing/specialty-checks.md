@@ -1,6 +1,6 @@
 # Specialty checks
 
-Checks for one kind of change each. The kill-recovery test, scenarios, and
+Each check covers one kind of change. The kill-recovery test, scenarios, and
 smokes run the production build, so run `npm run build` first.
 
 | Command | Run when |
@@ -13,7 +13,7 @@ smokes run the production build, so run `npm run build` first.
 
 ## Smoke windows
 
-`npm run test:smoke` also runs `scripts/quit-signal-check.mjs`: it sends
+`npm run test:smoke` also runs `scripts/quit-signal-check.mjs`, which sends
 SIGTERM to the hidden app's whole process group and fails on anything but a
 clean exit. `--runs <n>` repeats it. A failure here is a real Chromium abort,
 so run it with `ulimit -c 0` to skip the core dump and its desktop
@@ -30,9 +30,8 @@ only.
 
 ## Production error gates
 
-The development error backlog is off in production builds. Instead,
-kill-recovery, electron-smoke, the profile scripts, and scenarios fail on
-uncaught renderer exceptions, unexpected `console.error` calls captured over
-CDP, and known main failure lines. mcp-smoke, startup-profile, and manual
-production passes have no renderer gate; record what the window and terminal
-show.
+Production builds have no error backlog. Instead, kill-recovery,
+electron-smoke, the profile scripts, and scenarios fail on uncaught renderer
+exceptions, unexpected `console.error` calls captured over CDP, and known main
+failure lines. mcp-smoke, startup-profile, and manual production passes have
+no renderer gate; record what the window and terminal show.

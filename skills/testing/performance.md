@@ -1,8 +1,7 @@
 # Performance evidence
 
-Read and apply [benchmark-checklist](../benchmark-checklist/SKILL.md) before
-reporting a measured result. The fixture and display-specific checks below
-remain part of the evidence.
+Apply [benchmark-checklist](../benchmark-checklist/SKILL.md) before reporting
+a measured result, along with the fixture and display checks below.
 
 A source-level argument does not prove a claim about frame time or startup
 speed. Next to each task, record the fixture, build, machine, load average,
@@ -33,7 +32,17 @@ command, and the before and after results.
   and weigh only the gaps between paired runs. A perf gate compares medians of
   30 or more runs per side, never the slowest of a few runs, and reports
   INCONCLUSIVE instead of failing when the load average is above about
-  `nproc`/4.
+  `nproc`/4. The profile scripts wait for that load before each sample and redo
+  one the load rose during (`--max-load`, default `nproc`/4); copy their "Load
+  gate" summary into the report.
+- Time a route in three cases and report each separately: the first visit in a
+  session, a Reload or launch straight onto the route, and warm revisits.
+  Warm-only timing missed F12's first-visit stall and cost two fix rounds.
+  `node scripts/route-timing.mjs --help` times all three for one route.
+- A perf gate times the gesture that pays the changed cost, and moves with it
+  when a fix moves the cost. K2's fix 2 moved the re-read and re-sort of every
+  loaded record from navigation to Show more, and the gate still timed only
+  navigation.
 - Browser traces cannot see host or main-process blocking. The host runs in
   its own process; `node scripts/host-stall-bench.mjs` measures key delay in
   the page while the host works. Measure other main-process work in the owning

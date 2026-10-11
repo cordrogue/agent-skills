@@ -14,7 +14,7 @@ This skill orchestrates three others: an inline mining pass (see step 1), the **
 
 ### 0. Check for an existing skill
 
-Look recursively for `.agents/skills/**/*-mode/SKILL.md`, `~/.claude/skills/*-mode/SKILL.md`, and `~/.codex/skills/*-mode/SKILL.md` matching the user's handle. Mode skills can live in a personal category directory (`.agents/skills/<handle>/`), not only at the top level. If one exists, confirm intent by asking the user in chat (unless they already said "update my skill" or similar):
+Look recursively for `.agents/skills/**/*-mode/SKILL.md`, `~/.agents/skills/**/*-mode/SKILL.md`, and an older `~/.codex/skills/*-mode/SKILL.md` matching the user's handle. Mode skills can live in a personal category directory (`.agents/skills/<handle>/`), not only at the top level. If one exists, confirm intent by asking the user in chat (unless they already said "update my skill" or similar):
 
 - Update the existing skill (default for repeat runs)
 - Start fresh (rare, ask why before doing it)
@@ -41,7 +41,7 @@ Cross-check across slices before elevating a signal. Patterns seen in 2+ slices 
 
 ### 2. Ask the user directly
 
-Mining misses intent that hasn't come up yet. Ask the user in chat with numbered multiple-choice options rather than asking the user to type from scratch.
+Mining misses intent that hasn't come up yet. Ask in chat with numbered multiple-choice options rather than asking the user to type from scratch.
 
 Shape: one or two questions with 4-6 options each, and say when several may be picked for category questions. Start broad ("Which areas matter most?"), then follow up on selected areas with specific options. After the structured rounds, one free-form chat question catches anything the options missed.
 
@@ -66,11 +66,11 @@ The **poteto-mode** skill shows the shape. Read it for granularity. Don't copy i
 
 Use the **writing-for-agents** skill to author the skill. Placement:
 
-- Path: preserve an existing mode skill's category. For a new mode, use `.agents/skills/<handle>/<handle>-mode/SKILL.md` when the repo has an established personal category for that handle. Otherwise default to `.agents/skills/<handle>-mode/SKILL.md` in the project (or `~/.claude/skills/<handle>-mode/` and `~/.codex/skills/<handle>-mode/` if the user prefers a personal skill).
+- Path: preserve an existing mode skill's category. For a new mode, use `.agents/skills/<handle>/<handle>-mode/SKILL.md` when the repo has an established personal category for that handle. Otherwise default to `.agents/skills/<handle>-mode/SKILL.md` in the project (or `~/.agents/skills/<handle>-mode/SKILL.md`, one copy both harnesses read, if the user prefers a personal skill).
 - Handle: the user's first name or chosen identifier.
-- Frontmatter `description`: trigger on their name + `/<handle>-mode` + "work in their style", not on generic keywords like "write code" or "review code".
-- Frontmatter formatting: follow the frontmatter rules in [`SKILL-MECHANICS.md`](../writing-for-agents/SKILL-MECHANICS.md). Keep `description` as one YAML scalar. Quote it or use `description: >-` with indented continuation lines when punctuation or wrapping requires it.
-- Frontmatter `disable-model-invocation: true` by default. Opt out only if the user explicitly wants their mode to apply on every turn.
+- Frontmatter `disable-model-invocation: true` and a one-line human-facing `description` by default, per [`SKILL-MECHANICS.md`](../writing-for-agents/SKILL-MECHANICS.md).
+- Omit `disable-model-invocation` only if the user wants agents to find the mode on their own. Then the `description` triggers on their name + `/<handle>-mode` + "work in their style", not on generic keywords like "write code" or "review code".
+- Frontmatter formatting: keep `description` as one YAML scalar. Quote it or use `description: >-` with indented continuation lines when punctuation or wrapping requires it.
 
 ### 5. Iterate on prose
 

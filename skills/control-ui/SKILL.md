@@ -11,8 +11,8 @@ Use local browser automation to verify UI behavior with evidence. First reuse th
 
 This project has two paths. Take the first unless the task names the second.
 
-1. **Built Electron app, preferred.** The [`verify-electron`](../verify-electron/SKILL.md) skill. It runs the real main process, preload, and SQLite on a fresh copy of the sample project, offscreen, with a session per worktree. Every proof of a UI change ends here, and its feature map in `verify-electron/features/` says how to reach and check each feature.
-2. **Browser dev view.** The [`run-app`](../run-app/SKILL.md) session, driven with the harness browser tools (T3 Code `preview_*`, or the Codex browser). Renderer edits hot-reload with no build, so it suits fast iteration on layout and copy. Point `APP_PROJECT_PATH` at a throwaway project from `npm run sample:build -- <dir>` before any write. It talks to the backend through the dev bridge instead of Electron's preload, so a pass here still needs path 1 before the change counts as verified.
+1. **Built Electron app, preferred.** The [`verify-electron`](../verify-electron/SKILL.md) skill runs the real main process, preload, and SQLite on a fresh copy of the sample project, offscreen, with a session per worktree. Every proof of a UI change ends here. Its feature map in `verify-electron/features/` says how to reach and check each feature.
+2. **Browser dev view.** The [`run-app`](../run-app/SKILL.md) session, driven with the harness browser tools (T3 Code `preview_*`, or the Codex browser). Renderer edits hot-reload, so it suits fast iteration on layout and copy. Before any write, point `APP_PROJECT_PATH` at a throwaway project from `npm run sample:build -- <dir>`. It reaches the backend through the dev bridge, not Electron's preload, so a pass here still needs path 1 to count as verified.
 
 The generic recipes below are for surfaces outside the app, such as a prototype scratch page.
 

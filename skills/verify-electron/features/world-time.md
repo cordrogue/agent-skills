@@ -21,27 +21,25 @@ Every page shows the world as of the viewed date. The footer clock steps between
 
 Preconditions:
 
-- A fresh `start`, then `doctor`. Commands below are arguments to `node scripts/verify-electron.mjs`.
-- Story present is 20000000, "Bloomtide 1, Year 42 · 21:20". `eval 'window.app.getTimelineBounds()'` returns `storyPresentTick` 20000000. Re-read it after each step below. It must not change.
+- Run `doctor` after `start`.
+- `eval '(async () => (await window.appHost.invoke("getTimelineBounds", undefined, {})).output)()'` returns `storyPresentTick` 20000000; re-read it after each step below, and it must not change.
 - Fixture for `time-state` is "Mara Venn", id 1, status "Active on the Starhold survey".
 
-- **Adjacent.** On Overview, `click --role button --name 'Go to previous authored change'`. The route becomes `worldTick=19990360`, matching `getAdjacentTimelineChange({direction:"backward",tick:20000000})`. The footer reads "Viewing Starhold Ledger Review at Greengale 23, Year 42 · 04:40." `click --role button --name 'Go to next authored change'` goes to 20040000, "Relighting of Starhold". Story present is not a stop.
+- **Adjacent.** On Overview, `click --role button --name 'Go to previous authored change'`. The route becomes `worldTick=19990360`, matching `getAdjacentTimelineChange({direction:"backward",tick:20000000})`, and the footer reads "Viewing Starhold Ledger Review at Greengale 23, Year 42 · 04:40." `click --role button --name 'Go to next authored change'` goes to 20040000, "Relighting of Starhold". Story present is not a stop.
 - **Context menu.** `click --role button --name 'Go to previous authored change' --button right`, then `click --role menuitem --name 'Previous authored change'`. The route steps back to 19990360.
 - **Date editor.** `click 'button[aria-label^="Viewed date "]'` and `wait --role group --name 'Viewed date'`. The group has "Return to story present", "Start of year", "Next year", spinbuttons "Viewed date day", "year", "hour", and "minute", and a disabled "Apply date".
 - **Typed date.** From story present, `click --role spinbutton --name 'Viewed date day'`, `press Control+a`, `type '2'`, and `click --role button --name 'Apply date'`. The route becomes `worldTick=20001440` and the button reads "Viewed date Bloomtide 2, Year 42 · 21:20".
-- **Invalid date.** Reopen, set "Viewed date year" to `0` the same way. An alert reads "Year must be 1 or later." and Apply date stays disabled. `press Escape` resets the draft fields.
+- **Invalid date.** Reopen and set "Viewed date year" to `0` the same way. An alert reads "Year must be 1 or later." and Apply date stays disabled. `press Escape`, or a click outside the editor, closes it without applying the draft; Escape also returns focus to the date button.
 - **Shortcuts.** Each closes the editor at once. "Return to story present" sets 20000000. "Start of year" from Bloomtide 2 gives 19837440, "Dawnmere 1, Year 42 · 00:00". "Next year" adds 483840 ticks.
 - **Route.** `click --role button --name 'Timeline'`. The route keeps the same `worldTick`.
 - **Scrubber.** `click --role button --name 'Expand timeline scrubber'` and `wait --role region --name 'Timeline ruler'`. The aside's `data-state` is `expanded`, with slider "Scrub visible dates", event and record lanes, "Timeline category", and the viewport buttons. `click --role slider --name 'Scrub visible dates'` moves viewed time to the clicked date, and `press ArrowRight` adds one tick. "Pan timeline earlier", "Zoom timeline in", and "Center timeline on viewed date" change the slider's `min` and `max` while the route's `worldTick` stays put.
-- **Collapse.** `click --role button --name 'Collapse timeline scrubber'` and `wait --role region --name 'Timeline ruler' --gone`. With focus inside the expanded dock, `press Escape` collapses it too.
-- **Dated change.** `shot --route '#/people/1?worldTick=20000000'`, open the date editor and `wait` for its group, then `click --role button --name 'Next year'` (route `worldTick=20483840`). `click --role button --name 'Add change'`, `click --role textbox --name 'Status'`, `press Control+a`, `type 'Verification survey update'`, and `click --role button --name 'Save'`. The form stays open with Save disabled. `click --role button --name 'Cancel'` shows the profile with the new status. "Return to story present" shows the old status again. `getCharacter({id:1,asOfTick:20000000})` and `asOfTick:20483840` return the two values.
-- **Reload.** At `worldTick=20483840`, run `reload`. A `window` marker set with `eval` is gone afterwards, the route keeps `worldTick=20483840`, the date button reads "Viewed date Bloomtide 1, Year 43 · 21:20", Status reads "Verification survey update", and `getTimelineBounds()` still gives `storyPresentTick` 20000000. "Return to story present" then shows "Active on the Starhold survey".
+- **Collapse.** `click --role button --name 'Collapse timeline scrubber'` and `wait --role region --name 'Timeline ruler' --gone`. With focus inside the expanded dock, `press Escape` also collapses it.
+- **Dated change.** `shot --route '#/people/1?worldTick=20000000'`, open the date editor and `wait` for its group, then `click --role button --name 'Next year'` (route `worldTick=20483840`). `click --role button --name 'Edit' --nth 0`, `click --role textbox --name 'Current situation'`, `press Control+a`, `type 'Verification survey update'`, and `click --role button --name 'Change from this time'`. The form closes and the profile shows the new Current situation; "Return to story present" shows the old one. `eval` of `window.appHost.invoke('records.character.get', {id:1}, {at:20000000})` and `{at:20483840}` returns the two values in `output.situation`.
+- **Reload.** At `worldTick=20483840`, `reload`. A `window` marker set with `eval` is gone afterwards, the route keeps `worldTick=20483840`, the date button reads "Viewed date Bloomtide 1, Year 43 · 21:20", Current situation reads "Verification survey update", and `getTimelineBounds()` still gives `storyPresentTick` 20000000. "Return to story present" then shows "Active on the Starhold survey".
 
 ## Gotchas
 
-- In the minimal footer, Escape and outside clicks do not close the Viewed date editor. Click the date button again or pick a shortcut.
 - After Save, a record form stays in edit mode. Use "Cancel" to return to the profile.
-- Reload with the `reload` command. `eval 'location.reload()'` is blocked by the app's navigation guard.
 - The date editor opens after `click` returns. `wait --role group --name 'Viewed date'` before a shortcut, or the click misses.
 - Story present is set in Settings. See [settings-world-time.md](settings-world-time.md).
 

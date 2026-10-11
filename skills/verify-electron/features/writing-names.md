@@ -1,6 +1,6 @@
 # Names and mentions in prose
 
-The scene editor suggests existing record names while the writer types. Scene context lists the records a saved version mentions, lets the writer mark characters present, and proposes new records from cued names.
+The scene editor suggests existing record names while the writer types. Scene context lists the records a saved version mentions, marks characters present, and proposes new records from cued names.
 
 ## Sub-features
 
@@ -21,16 +21,16 @@ The scene editor suggests existing record names while the writer types. Scene co
 
 Preconditions:
 
-- A fresh `start`. Commands below are `node scripts/verify-electron.mjs` subcommands. Fixture is Scene "The Salt Bell". Mara Venn is character id 1.
-- Resolve `<sceneId>` as in [scene-recovery.md](scene-recovery.md) and `<versionId>` with `eval '(async()=> (await window.app.getSceneWriting({sceneId:"<sceneId>"})).selected.currentVersion.id)()'`.
+- Fixture is Scene "The Salt Bell". Mara Venn is character id 1.
+- Resolve `<sceneId>` as in [scene-recovery.md](scene-recovery.md) and `<versionId>` with `eval '(async()=> (await window.appHost.invoke("getSceneWriting", {sceneId:"<sceneId>"}, {})).output.selected.currentVersion.id)()'`.
 
-- **Open.** Run `click --role button --name 'Writing'` and `click --role button --name 'Open The Salt Bell'`. Scene context lists Mara Venn, Sera Nhal, Tovan Ash, and Captain Orin Venn, item Cinderglass Ledger, and event Moonfall Accord.
-- **Click a name.** Run `click --role textbox --name 'Scene prose'`, `press Control+End`, `press Enter`, and `type 'Ma'`. "Name suggestions" lists "Mara Venn", "Mariner's Vault", and "Mara". Run `click --role button --name 'Mara Venn'` and `wait --role group --name 'Name suggestions' --gone`. Poll `wait --until '(async()=> (await window.app.getSceneWriting({sceneId:"<sceneId>"})).selected.scene.recoveryDraft.bodyMarkdown.endsWith("Mara Venn"))()'`.
-- **Tab.** Run `press Enter`, `type 'Ser'`, and `press Tab`. Suggestions were "Sera Nhal" and "Sera". The draft ends with "Sera Nhal".
-- **Dismiss.** Run `press Enter`, `type 'To'`, `wait --role group --name 'Name suggestions'`, `press Escape`, and `wait --role group --name 'Name suggestions' --gone`. The draft ends with "To" and the editor stays open.
-- **Mentions.** `eval 'window.app.listSceneVersionMentions({sceneVersionId:"<versionId>"})'` holds a mention with `form: "Mara Venn"`. Run `click --role link --name 'Mara Venn'`. The route is `#/people/1`. `click --role button --name 'Go back'` returns to the Scene.
-- **Presence.** Run `click --role checkbox --name 'Mara Venn present'`. It reads `[checked]`, and `listSceneVersionMentions` has `presentCharacterIds: [1]`. Clicking again unchecks it and empties the array. The Mara Venn link stays.
-- **Propose.** Run `click --role textbox --name 'Scene prose'`, `press Control+End`, `type ' Captain Brannoch waited.'`, `click --role button --name 'Save version'`, and `click --role button --name 'Find new names'`. Region "Possible new records" shows "Brannoch", "character", "Accept", and "Reject". Run `click --role button --name 'Accept'`. Poll `wait --until '(async () => (await window.app.listCharacters({})).some(c => c.name === "Brannoch"))()'`. Characters gains a "Brannoch" link and "Brannoch present".
+- **Open.** `click --role button --name 'Writing'` and `click --role button --name 'Open The Salt Bell'`. Scene context lists Mara Venn, Sera Nhal, Tovan Ash, and Captain Orin Venn, item Cinderglass Ledger, and event Moonfall Accord.
+- **Click a name.** `click --role textbox --name 'Scene prose'`, `press Control+End`, `press Enter`, and `type 'Ma'`. "Name suggestions" lists "Mara Venn", "Mariner's Vault", and "Mara". `click --role button --name 'Mara Venn'` and `wait --role group --name 'Name suggestions' --gone`. Poll `wait --until '(async()=> (await window.appHost.invoke("getSceneWriting", {sceneId:"<sceneId>"}, {})).output.selected.scene.recoveryDraft.bodyMarkdown.endsWith("Mara Venn"))()'`.
+- **Tab.** `press Enter`, `type 'Ser'`, and `press Tab`. Suggestions were "Sera Nhal" and "Sera". The draft ends with "Sera Nhal".
+- **Dismiss.** `press Enter`, `type 'To'`, `wait --role group --name 'Name suggestions'`, `press Escape`, and `wait --role group --name 'Name suggestions' --gone`. The draft ends with "To" and the editor stays open.
+- **Mentions.** `eval '(async () => (await window.appHost.invoke("listSceneVersionMentions", {sceneVersionId:"<versionId>"}, {})).output)()'` holds a mention with `form: "Mara Venn"`. `click --role link --name 'Mara Venn'` opens `#/people/1`; `click --role button --name 'Go back'` returns to the Scene.
+- **Presence.** `click --role checkbox --name 'Mara Venn present'`. It reads `[checked]`, and `listSceneVersionMentions` has `presentCharacterIds: [1]`. Clicking again unchecks it and empties the array. The Mara Venn link stays.
+- **Propose.** `click --role textbox --name 'Scene prose'`, `press Control+End`, `type ' Captain Brannoch waited.'`, `click --role button --name 'Save version'`, and `click --role button --name 'Find new names'`. Region "Possible new records" shows "Brannoch", "character", "Accept", and "Reject". `click --role button --name 'Accept'`, then poll `wait --until '(async () => (await window.appHost.invoke("records.character.list", {show:"all"}, {at:20000000})).output.items.some((c) => c.title === "Brannoch"))()'`. Characters gains a "Brannoch" link and "Brannoch present".
 - **No proposals.** On the unchanged sample version, "Find new names" shows the alert "No new character, location, or item mentions were found."
 
 ## Gotchas

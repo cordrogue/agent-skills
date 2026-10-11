@@ -1,6 +1,6 @@
 # In-app agent
 
-The app's agent panel starts a local Codex app-server for the project, signs the writer in with ChatGPT, and then runs task conversations that can propose project changes for the writer to accept or decline.
+The app's agent panel starts a local Codex app-server for the project, signs the writer in with ChatGPT, and runs task conversations that can propose changes for the writer to accept or decline.
 
 ## Sub-features
 
@@ -14,7 +14,7 @@ The app's agent panel starts a local Codex app-server for the project, signs the
 
 ## How to get to it (user POV)
 
-- Top bar "Open App agent" on any page. It becomes "Close App agent" while open. There is no agent route.
+- Top bar "Open App agent" on any page, which reads "Close App agent" while open. There is no agent route.
 - At 1440 px the panel is a region "App agent" inside complementary "App agent lane", with header "App Agent" and button "Close agent".
 - Before start it shows "Not started", "Sign in to Codex", and "Start agent". After start it shows "Ready" and "Sign in". Tasks, New task, Message, Send, Stop, Accept, and Decline appear only after sign-in.
 
@@ -22,19 +22,18 @@ The app's agent panel starts a local Codex app-server for the project, signs the
 
 Preconditions:
 
-- A fresh `start`. Commands below are `node scripts/verify-electron.mjs` subcommands.
 - The panel talks to `window.appAgent` (getSnapshot, start, restart, startLogin, logout, readThread, startThread, sendMessage, interruptTurn, resolveApproval, onEvent). Read state only with `eval 'window.appAgent.getSnapshot()'`.
 
 - **Open.** Run `click --role button --name 'Open App agent'`, then `wait --role button --name 'Start agent'`. `snapshot --role region --name 'App agent'` shows "Not started", "Sign in to Codex", and "Start agent".
-- **Close.** `click --role button --name 'Close agent'` removes the region and the top bar shows "Open App agent". Reopen it, then `click --role button --name 'Close App agent'` closes it the same way.
-- **Start.** Run `click --role button --name 'Start agent'`. It prints its JSON line at once with empty `rendererErrors` and `mainFailures`. Then run `wait --until '(async () => (await window.appAgent.getSnapshot()).connection.kind === "ready")()'`. The panel reads "Ready", "Sign in with ChatGPT to use the App agent.", and "Sign in". `getSnapshot()` returns `account.kind: "signedOut"`, `threads: []`, and `activeTurn: null`.
-- **Sign in, tasks, message, stop, approvals.** verified-unreachable. The prerequisite is a ChatGPT account signed in to Codex. "Sign in" starts an external ChatGPT login that only the developer can complete, so it was not clicked, and every later control needs that account.
+- **Close.** `click --role button --name 'Close agent'` removes the region and the top bar shows "Open App agent". Reopen it; `click --role button --name 'Close App agent'` closes it the same way.
+- **Start.** `click --role button --name 'Start agent'` prints its JSON line at once with empty `rendererErrors` and `mainFailures`. Then `wait --until '(async () => (await window.appAgent.getSnapshot()).connection.kind === "ready")()'`. The panel reads "Ready", "Sign in with ChatGPT to use the App agent.", and "Sign in". `getSnapshot()` returns `account.kind: "signedOut"`, `threads: []`, and `activeTurn: null`.
+- **Sign in, tasks, message, stop, approvals.** verified-unreachable. The prerequisite is a ChatGPT account signed in to Codex. Every later control needs that account.
 
 ## Gotchas
 
-- Do not choose "Sign in" in the offscreen session. Its login flow runs outside the app window, and only the developer can complete it.
-- The panel slides in. A full `snapshot` taken right after opening can show the lane without the region. Wait for "Start agent" or "Sign in" first.
-- "Restart agent" appears only after a failed start. A successful start never shows it.
+- Do not choose "Sign in" offscreen. Its ChatGPT login runs outside the app window, and only the developer can complete it.
+- The panel slides in. A full `snapshot` right after opening can show the lane without the region. Wait for "Start agent" or "Sign in" first.
+- "Restart agent" appears only after a failed start.
 
 ## Source and tests
 

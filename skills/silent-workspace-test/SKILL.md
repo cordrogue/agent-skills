@@ -8,12 +8,12 @@ description: >
 
 # Silent workspace testing
 
-Never let a test window land on or focus the user's workspace. For app
-checks that need no visible window, use the repo's `verify-electron` skill
-instead: it renders offscreen and needs none of this.
+Never let a test window land on or focus the user's workspace. The app checks
+that need no visible window use the `verify-electron` skill instead, which
+renders offscreen.
 
-Hyprland here uses Lua config: use `hyprctl eval`. `[workspace 5 silent]` exec
-syntax and `hl.exec_cmd` rules do not work.
+Hyprland here uses Lua config, so use `hyprctl eval`; `[workspace 5 silent]`
+exec syntax and `hl.exec_cmd` rules do not work.
 
 1. **One shared rule.** The app's window class is `app` (dev and installed
    builds); for another app, read its class from `hyprctl clients -j`. Check
@@ -24,24 +24,24 @@ syntax and `hl.exec_cmd` rules do not work.
    ```
 
    It prints `true` when installed. Otherwise the orchestrator installs it
-   once for the whole run. A top-level session with no orchestrator above it
-   is its own orchestrator; parallel agents and subagents never install it:
+   once for the whole run; a top-level session with no orchestrator above it
+   is its own orchestrator, and parallel agents and subagents never install it:
 
    ```sh
    hyprctl eval '_G.silent_test_rule = hl.window_rule({ name = "silent-test", match = { class = "^app$" }, workspace = "5 silent", focus_on_activate = false, no_initial_focus = true, render_unfocused = true, float = true, size = { 1440, 900 } })'
    ```
 
-   - `focus_on_activate = false`: Electron activates its window on show, which
-     otherwise switches the monitor to workspace 5.
+   - `focus_on_activate = false`: otherwise Electron activating its window on
+     show switches the monitor to workspace 5.
    - `render_unfocused = true`: without it, a window on an unviewed workspace
      draws no frames, `requestAnimationFrame` never fires, and the app stalls.
      It draws at `misc:render_unfocused_fps` (15 by default).
-   - `float = true, size = { 1440, 900 }`: tiling would otherwise split
-     workspace 5 among every window on it and produce tall, narrow windows.
+   - `float = true, size = { 1440, 900 }`: otherwise tiling splits workspace 5
+     among every window on it into tall, narrow windows.
    - While the rule is installed, the user's own app launches also land on
      workspace 5.
-   - The rule suppresses focus and fixes the window size, so a window under it
-     cannot show focus or sizing behavior. Ask the user to check those.
+   - The rule suppresses focus and fixes the window size, so ask the user to
+     check focus or sizing behavior.
 
 2. **Launch** from the checkout after `npm run build`, on a throwaway copy of
    the sample. The Claude Code shell sets `ELECTRON_RUN_AS_NODE=1`, so unset it:
@@ -50,8 +50,8 @@ syntax and `hl.exec_cmd` rules do not work.
    (env -u ELECTRON_RUN_AS_NODE APP_USER_DATA=<tmp>/user-data APP_PROJECT_PATH=<tmp>/project setsid node_modules/.bin/electron . --remote-debugging-port=0 >"<tmp>/silent-test.log" 2>&1 </dev/null &)
    ```
 
-3. **Verify placement.** Expect the window's workspace to be 5 and the
-   monitor's active workspace unchanged:
+3. **Verify placement.** The window's workspace should be 5 and the monitor's
+   active workspace unchanged:
 
    ```sh
    hyprctl clients -j | node -e 'for (const w of JSON.parse(require("fs").readFileSync(0))) if (w.class === "app") console.log(w.workspace.id, w.pid, w.size)'
@@ -69,5 +69,5 @@ syntax and `hl.exec_cmd` rules do not work.
    Never run `hyprctl reload`: it can drop another run's rule and send windows
    to the user's workspace.
 
-If a test window ever lands on the user's workspace, kill it right away and
-tell the user. Do not switch workspaces for them.
+If a test window lands on the user's workspace, kill it right away and tell
+the user. Don't switch workspaces for them.

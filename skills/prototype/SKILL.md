@@ -8,9 +8,7 @@ disable-model-invocation: true
 
 ## Choose the question
 
-For a business-logic, state-transition, or data-model question, follow [LOGIC.md](LOGIC.md). It builds one self-contained HTML demo with readable state, free-play actions, and guided scenarios.
-
-For a visual UI question, follow the UI variant workflow below. Keep its picker, the project's design rules, dev-only route, and promotion process. If the question is ambiguous, infer it from the request and state the assumption.
+For a business-logic, state-transition, or data-model question, follow [LOGIC.md](LOGIC.md): one self-contained HTML demo with readable state, free-play actions, and guided scenarios. For a visual UI question, follow the UI variant workflow below. If the question is ambiguous, infer it from the request and state the assumption.
 
 ## UI variants
 
@@ -25,7 +23,7 @@ Divergence is not an excuse to drop the craft bar. Every variant is polished on 
 ## Hard Rules
 
 1. **Never touch production code during exploration.** Everything lives in an isolated prototype surface (see Phase 4). Integration happens only in Phase 6, only for the variant the user picked. In this project, the one exception is the dev-only route entry from Phase 4.
-2. **Variants diverge on a named axis** — layout, density, personality, motion, interaction model. Before building, you must be able to state each variant's axis in a phrase. Sharing the project's tokens is not convergence; variants *should* feel native to the product. In this project, variants have no motion: drop the motion axis and render state changes instantly. Every axis stays inside the `ui-preferences` skill: true black, dense, flat sections without decorative cards or pills, opaque surfaces without glass or blur, and motion that settles instead of looping.
+2. **Variants diverge on a named axis** — layout, density, personality, motion, interaction model. Before building, you must be able to state each variant's axis in a phrase. Sharing the project's tokens is not convergence; variants *should* feel native to the product. In this project, drop the motion axis and render state changes instantly. Every axis stays inside the `ui-preferences` skill: true black, dense, flat sections without decorative cards or pills, opaque surfaces without glass or blur.
 3. **Every variant fully works.** Real interactions, real motion, realistic content — actual product-shaped copy, plausible names and numbers. No lorem ipsum, no dead buttons, no "imagine this part".
 4. **The picker is chrome, not a contestant.** Its exact markup, styles, and behavior are specified in [PICKER.md](PICKER.md) — copy them verbatim. Its look is not a design decision and never adapts to the project.
 5. **Clean up after the choice.** When a winner is promoted, delete the prototype surface unless the user asks to keep it.
@@ -61,7 +59,7 @@ Before writing any code, list the set: a name and an axis for each. Names descri
 
 Two branches, by what exists:
 
-- **In this project.** A dev-only TanStack Router route at `/prototypes/<slug>`. Routes are code-based in `src/renderer/router.tsx`; there are no file routes. Put the harness and one file per variant in `src/renderer/prototypes/<slug>/`. Register the route behind `import.meta.env.DEV`, which Vite replaces with `false` in production builds, so the route and its lazy chunk drop out:
+- **In this project.** A dev-only TanStack Router route at `/prototypes/<slug>`, registered in code in `src/renderer/router.tsx` (there are no file routes). Put the harness and one file per variant in `src/renderer/prototypes/<slug>/`. Guard the route with `import.meta.env.DEV`, which Vite replaces with `false` in production builds, dropping the route and its lazy chunk:
 
   ```tsx
   const prototypeRoutes = import.meta.env.DEV
@@ -80,7 +78,7 @@ Two branches, by what exists:
   // then spread ...prototypeRoutes into rootRoute.addChildren([...])
   ```
 
-  The route renders inside the app shell with the open project. Realistic content comes from the sample project, the default project of the `run-app` skill: read its records through the same queries the real feature would use. View it with `run-app` in browser mode at `<rendererUrl>#/prototypes/<slug>` (the router uses hash history). Nothing outside `src/renderer/prototypes/` and that guarded route entry imports from the prototype surface.
+  The route renders inside the app shell with the open project. Take realistic content from the sample project (the `run-app` default) through the same queries the real feature would use. View it with `run-app` in browser mode at `<rendererUrl>#/prototypes/<slug>` (hash history). Only `src/renderer/prototypes/` and the guarded route entry may import from the prototype surface.
 - **In another project with a dev server** — an isolated route or page (`/prototypes/<slug>`, or the framework's equivalent), one file per variant plus a small harness file. Nothing imports from the prototype surface into production code.
 - **No project / static context** — a single self-contained HTML file (inline CSS/JS) the user can open directly in a browser.
 
@@ -103,7 +101,7 @@ Close with where the picker is running (URL or file path) and the keys to flip.
 
 ### Phase 6 — Promote on selection
 
-When the user picks: integrate that variant where it belongs, following the project's existing conventions (file layout, naming, token usage), then delete the prototype surface per Hard Rule 5. In this project, that means the `src/renderer/prototypes/<slug>/` folder and its route entry, and the change lands through the [Landing on main](../poteto-mode/playbooks/landing-on-main.md) playbook. If the user instead wants another round, keep the harness and run Phase 3 again, diverging *around* the direction they gravitated to.
+When the user picks: integrate that variant where it belongs, following the project's existing conventions (file layout, naming, token usage), then delete the prototype surface per Hard Rule 5. In this project, that is the `src/renderer/prototypes/<slug>/` folder and its route entry. Check the integrated variant in the built app with [verify-electron](../verify-electron/SKILL.md), then land it per [Landing on main](../poteto-mode/playbooks/landing-on-main.md). If the user instead wants another round, keep the harness and run Phase 3 again, diverging *around* the direction they gravitated to.
 
 ## Invocation Variants
 

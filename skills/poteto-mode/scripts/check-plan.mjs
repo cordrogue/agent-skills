@@ -4,7 +4,8 @@ import process from 'node:process';
 
 const RULE =
   'Tests alone are not sufficient verification. A change is verified only when its unit, live, and perf boxes are all checked.';
-const LANES = /Ten lanes on `[^`<>]+` at the unit's head commit/;
+const LANE_COUNTS = { Four: 4, Five: 5, Six: 6 };
+const LANES = /(Four|Five|Six) lanes on `[^`<>]+` at the unit's head commit(, because \S)?/;
 const SUB_BLOCKS = [
   'Depends on.',
   'Files.',
@@ -23,7 +24,7 @@ const PROGRAM_H3 = [
   'Verdict and merge',
   'Boot recipe',
 ];
-const PROGRAM_MARKERS = ['/loop', 'git show main:', /30[- ]minute/, 'status message'];
+const PROGRAM_MARKERS = ['background `sleep', 'git show main:', 'status message'];
 const HOW_TO_READ_MARKERS = [
   'One box is one unit of work',
   'names the evidence',
@@ -106,11 +107,7 @@ else {
     else cursor = at + 1;
   }
   for (const marker of PROGRAM_MARKERS) {
-    const ok =
-      marker instanceof RegExp
-        ? marker.test(bodyText(program))
-        : bodyText(program).includes(marker);
-    if (!ok) fail(program.n, `Program checklist lacks "${marker}"`);
+    if (!bodyText(program).includes(marker)) fail(program.n, `Program checklist lacks "${marker}"`);
   }
 }
 
@@ -158,18 +155,26 @@ for (const unit of unitSections) {
 
   const live = block('Verify, live.');
   if (live) {
-    if (!LANES.test(live.rest))
+    const sentence = live.rest.match(LANES);
+    if (!sentence)
       fail(
         live.n,
-        `${unit.title}: Verify, live lacks "Ten lanes on \`<swarm workers model>\` at the unit's head commit" with the model filled in`,
+        `${unit.title}: Verify, live lacks "Four lanes on \`<swarm workers model>\` at the unit's head commit" with the model filled in`,
+      );
+    const count = sentence ? LANE_COUNTS[sentence[1]] : 4;
+    if (count > 4 && !sentence[2])
+      fail(
+        live.n,
+        `${unit.title}: ${sentence[1]} lanes needs ", because <the new screen or second surface>" after "head commit"`,
       );
     const lanes = boxes(live.lines).map((b) => ({ ...b, m: b.text.match(/^Lane (\d+)\. /) }));
     const numbers = lanes
       .filter((b) => b.m)
       .map((b) => Number(b.m[1]))
       .sort((a, b) => a - b);
-    if (numbers.join(',') !== '1,2,3,4,5,6,7,8,9,10')
-      fail(live.n, `${unit.title}: lanes are [${numbers.join(',')}], expected 1 to 10`);
+    const expected = Array.from({ length: count }, (_, i) => i + 1).join(',');
+    if (numbers.join(',') !== expected)
+      fail(live.n, `${unit.title}: lanes are [${numbers.join(',')}], expected 1 to ${count}`);
     for (const lane of lanes) {
       if (!lane.m) fail(lane.n, `${unit.title}: live box is not a lane`);
       else if (!/Save `[^`]+`/.test(lane.text))

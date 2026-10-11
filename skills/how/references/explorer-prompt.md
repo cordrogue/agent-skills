@@ -23,7 +23,7 @@ Start by finding the relevant code. Use Glob to find directories and files, Grep
 Follow this pattern:
 1. **Find the entry point.** What triggers this behavior? A user action, an API call, a scheduled job? Find where it starts.
 2. **Trace the flow.** Follow the call chain from the entry point. Read each function. Understand what data flows through and how it transforms.
-3. **Map the key abstractions.** What types, interfaces, services, or classes are central? Read their definitions. Understand what they represent and why they exist.
+3. **Map the key abstractions.** What types, interfaces, services, or classes are central? Read their definitions. Understand what they represent and why they exist. For stored history, say whether each row is an event, a change, or a snapshot that carries earlier values forward. A predicate on a carried column matches later snapshots until the value changes. Trace the real query with its filters and limits, and tell matching snapshots from distinct changes.
 4. **Find the boundaries.** Where does this subsystem interface with others? What goes in, what comes out?
 5. **Look for the non-obvious.** Anything surprising? Anything that looks like a historical artifact? Anything a newcomer would misunderstand?
 
@@ -47,6 +47,9 @@ Where this subsystem connects to other parts of the codebase. The inputs and out
 
 ### Non-Obvious Things
 Anything surprising, historically motivated, or easy to get wrong. Things that look like they should work one way but work another.
+
+### Old behavior
+Only when your angle is the old behavior of code a change replaces. Each user-visible behavior of each reader, writer and screen, and each scenario its tests check, with file and line.
 
 ### Open Questions
 Anything you couldn't fully trace or understand. Be honest about gaps.

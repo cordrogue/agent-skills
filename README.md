@@ -8,7 +8,8 @@ skills; see [ATTRIBUTION.md](ATTRIBUTION.md) for who wrote what.
 
 - `skills/`: one directory per skill, each with a `SKILL.md`.
 - `agents/`: Claude Code subagent definitions that some skills launch
-  (`poteto-agent`, and the two `thermos` reviewers).
+  (`poteto-agent`, `comment-sicko`, and the two `thermos`
+  reviewers).
 - `ATTRIBUTION.md`: the source and author of every skill.
 - `licenses/`: license texts for each source.
 
@@ -30,7 +31,7 @@ Or put them in `~/.claude/skills` and `~/.codex/skills` to use them everywhere.
 playbook and reads the `principle-*` skills when a step needs them. Also from
 pstack: `architect`, `arena`, `automate-me`, `benchmark-checklist`,
 `blast-radius`, `bro`, `correct`, `figure-it-out`, `how`, `interrogate`,
-`poteto-help`, `recall`, `reflect`, `show-me-your-work`, `swarm`, `tdd`,
+`ketchup`, `no-comments`, `poteto-help`, `recall`, `reflect`, `show-me-your-work`, `swarm`, `tdd`,
 `teach`, `technical-writing`, `typescript-best-practices`, `unslop`, `why`.
 
 **Verification, from pstack and Cursor:** `control-ui`, `control-cli`,
@@ -48,7 +49,7 @@ pstack: `architect`, `arena`, `automate-me`, `benchmark-checklist`,
 
 **Written for this repo:** `alpha-build`, `backlog`, `repeat-mistakes`,
 `run-app`, `silent-workspace-test`, `testing`, `ui-preferences`,
-`user-communication`, `verify-electron`. These name
+`user-communication`, `verify-electron`, `wrap-up`, `wrap-up-stack`. These name
 one app's scripts, docs, and sample data, so expect to rewrite them for
 your project.
 

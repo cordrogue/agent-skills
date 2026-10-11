@@ -33,6 +33,9 @@ commit `2eb7ed46`. License: MIT, `licenses/pstack.txt`.
   examples in `typescript-best-practices/references/patterns.md`.
 - From commit `2cbf585`: `poteto-help`, rewritten for this repo's skills,
   harnesses, and landing on main.
+- From commit `ccb5507`: `no-comments` and `agents/comment-sicko.md`.
+- From commit `9d76bca`: `ketchup`, and upstream's shortening pass over
+  most of the pstack skills above.
 - `swarm/references/fix-rounds.md` is new here.
 
 ## Cursor
@@ -96,4 +99,4 @@ These skills build on published ideas and name them where they are used:
 
 `alpha-build`, `backlog`, `repeat-mistakes`, `run-app`,
 `silent-workspace-test`, `testing`, `ui-preferences`, `user-communication`,
-`verify-electron` (including its `features/` map). MIT, see `LICENSE`.
+`verify-electron` (including its `features/` map), `wrap-up`, `wrap-up-stack`. MIT, see `LICENSE`.

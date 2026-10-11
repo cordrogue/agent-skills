@@ -16,16 +16,16 @@ Swap in the real paths, skills, and done checks. Informal wording works. These u
 - Bug: `/poteto-mode <symptom>. repro first, then fix and verify.`
 - Bug in the app: `/poteto-mode repro this in the built app on the sample project. if it repros on main, fix it and show me before and after screenshots.`
 - Bug with a cheap test: `/poteto-mode repro <bug> first. if there's a cheap test path, /tdd it. then fix and rerun.`
-- Feature: `/poteto-mode add <behavior>. <current behavior> stays the same. verify both in the built app.`
+- Feature: `/poteto-mode add <behavior>. <current output> stays byte-identical. verify both in the built app.`
 - Refactor: `/poteto-mode move <code> into one module, zero behavior change. record the current behavior first and prove it's unchanged after.`
 - Perf: `/poteto-mode <operation> takes <time> on the sample project. trace it, fix the measured cause, show me before and after.`
 
 ## Design and plan
 
-- `/poteto-mode prototype a few options for <feature>. put them behind the prototype picker and send me screenshots of each.`
+- `/poteto-mode prototype a few options for <feature>. use the prototype picker only for visual options. show me the evidence for each.`
 - `/poteto-mode we need <feature>. /architect it first, and answer open questions with prototypes. let me review before proceeding.`
 - `/poteto-mode write a tutorial for how i would use <framework addition> first. then /teach me why it beats the current way.`
-- `grill me on this plan before we build it.`
+- `grill me on this plan's product goals before we build it. settle technical questions with prototypes.`
 - `ask /arena for a second opinion on this thread and our approach.`
 - `/poteto-mode turn this design into a plan. small units that each land on main with their own proof.`
 - `/poteto-mode plan the migration of <code> to <target>. small verifiable units. the result must match the original exactly, bugs included.`
@@ -39,7 +39,7 @@ Swap in the real paths, skills, and done checks. Informal wording works. These u
 
 ## Away and back
 
-- `/poteto-mode im going to bed. <goal> in a fresh worktree off main. done means <checks>. keep a decision log. don't ask me before committing. /loop until done. if you're truly stuck after a few hours, stop and write up why.`
+- `/poteto-mode im going to bed. <goal> in a fresh worktree off main. done means <checks>. keep a decision log. don't ask me before committing. run until <checks> pass. if you're truly stuck after a few hours, stop and write up why.`
 - `/show-me-your-work catch me up on what you did last night.` Read its Attention section first.
 - `/poteto-mode pause safely. i'm about to restart t3 code.`
 - `/reflect capture what we learned so the next run doesn't repeat it.` Approve only edits that change a future decision.

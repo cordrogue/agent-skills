@@ -21,12 +21,12 @@ Settings, General, "World time" saves the project's story present, the default d
 
 Preconditions:
 
-- A fresh `start`, then `doctor`. Commands below are arguments to `node scripts/verify-electron.mjs`.
-- Read-only views are `eval 'window.app.getTimelineBounds()'` (`storyPresentTick` 20000000) and `eval 'window.app.getCalendarSettings()'` (`revision` 1, `config.name` "World Calendar", 12 periods of 28 days, 7 weekdays, 1 era).
+- Run `doctor` after `start`.
+- Read-only views are `eval '(async () => (await window.appHost.invoke("getTimelineBounds", undefined, {})).output)()'` (`storyPresentTick` 20000000) and `eval '(async () => (await window.appHost.invoke("getCalendarSettings", undefined, {})).output)()'` (`revision` 1, `config.name` "World Calendar", 12 periods of 28 days, 7 weekdays, 1 era).
 
-- **Draft.** `click --role button --name 'Settings'`. `click --role spinbutton --name 'Story present year'`, `press Control+a`, `type '43'`, and `click --role button --name 'Apply date'`. The group's date reads "Bloomtide 1, Year 43 · 21:20", "Save story present" enables, and `storyPresentTick` is still 20000000.
+- **Draft.** `click --role button --name 'Settings'`, `click --role spinbutton --name 'Story present year'`, `press Control+a`, `type '43'`, and `click --role button --name 'Apply date'`. The group's date reads "Bloomtide 1, Year 43 · 21:20", "Save story present" enables, and `storyPresentTick` is still 20000000.
 - **Save.** `click --role button --name 'Save story present'`. The page says "Story present updated. Your viewed date did not move." `storyPresentTick` is 20483840 and the route keeps `worldTick=20000000`.
-- **Shortcuts.** "Start of year", "Next year", and "Use viewed date" each change only the draft. "Use viewed date" copies the footer's date. Saving it restores 20000000.
+- **Shortcuts.** "Start of year", "Next year", and "Use viewed date" each change only the draft. "Use viewed date" copies the footer's date; saving it restores 20000000.
 - **Open calendar.** `click --role DisclosureTriangle --name 'Project calendarWorld Calendar · 12 periods · 336 days · 7 weekdays'`. Textboxes "Calendar name", "Hours per day", and "Minutes per hour" appear, then regions "Periods", "Weekdays", and "Eras". Rows use names such as "Period 5 name" and "Weekday 1 short name". "Save calendar" is disabled.
 - **Rename.** `click --role textbox --name 'Calendar name'`, `press Control+a`, `type 'Verification calendar'`. "Discard changes" appears. `click --role button --name 'Save calendar'`. The page says "Calendar revision 2 saved. Existing story dates and your viewed date did not move." `getCalendarSettings()` returns revision 2 and the new name, and `storyPresentTick` is unchanged.
 - **Structure.** `click --role button --name 'Add weekday'` adds "Weekday 8 name" with value "Day 8" and short "D8". Save, and `config.weekdays` has 8 entries at the next revision. "Add period" adds "Period 13" (28 days, so the header reads "364 days a year") and "Add era" adds "Era 2". Discard drops both.

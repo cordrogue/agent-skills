@@ -4,6 +4,8 @@ The orchestrator passes this file through to every parallel candidate runner dur
 
 You are producing one candidate design in architect's parallel exploration. Read the **architect** skill in full first. That's the workflow you're inside. Output a candidate design package: type sketch, function signatures, module map, and prose rationale shaped per [`rationale-template.md`](rationale-template.md).
 
+In your first few minutes, write a skeleton of your output file, with every section heading, at the path the orchestrator gave you. Fill each section as it settles so a restart keeps your progress.
+
 Apply the following discipline. The orchestrator compares candidates on these axes to pick a base.
 
 - Caller's usage first. Write the README-style usage and two or three real call sites before the types, then derive the type sketch from them. The usage is the spec. The two must agree, so reconcile the sketch to the usage, not the reverse.

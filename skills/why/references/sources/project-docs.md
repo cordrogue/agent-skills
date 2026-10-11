@@ -40,6 +40,7 @@ Use the shell.
 - **Doc vs. reality drift.** A plan may say "we'll do X" but the code actually does Y. Flag the divergence. The synthesizer will surface the contradiction.
 - **Decisions do not prove behavior.** `docs/README.md` says decision files preserve rationale and do not prove current behavior. Cite them for intent, not for what the code does.
 - **Finished work papers.** A plan in `docs/work/` may be complete and kept only for its record. Check its status line and dates.
+- **Drafts.** A finished plan can still hold a proposal nobody accepted. When versions compete, cite the one current at the target's change, and report later revisions separately.
 
 ## What to return
 
@@ -49,3 +50,4 @@ For each relevant doc:
 - The motivation text (verbatim quote), with `file:line`
 - Linked docs (so the synthesizer can cite them)
 - Whether the doc is a decision, a contract, a plan, or a backlog entry
+- Whether its proposal was draft, accepted, rejected, superseded, or unknown, apart from whether the work is complete

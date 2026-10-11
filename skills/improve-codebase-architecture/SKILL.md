@@ -11,9 +11,7 @@ Surface architectural friction and propose **deepening opportunities**: refactor
 This command is _informed_ by the project's domain model and built on a shared design vocabulary:
 
 - Read `.agents/skills/architect/references/codebase-design.md` for the architecture vocabulary (**module**, **interface**, **depth**, **seam**, **adapter**, **leverage**, **locality**) and its principles (the deletion test, "the interface is the test surface", "one adapter = hypothetical seam, two = real"). Use these terms exactly in every suggestion, and don't drift into "component," "service," "API," or "boundary."
-- The domain language in `docs/GLOSSARY.md` gives names to good seams. Resolve the
-  accepted architecture-decision directory through `docs/README.md`, then read
-  decisions in the area so this command does not re-litigate them.
+- The domain language in `docs/GLOSSARY.md` gives names to good seams. `docs/README.md` names the decision-record folder; read the decisions in the area so this command doesn't re-litigate them.
 
 ## Process
 

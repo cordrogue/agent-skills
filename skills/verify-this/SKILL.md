@@ -29,7 +29,7 @@ Do not use this for vague claims like "the code is cleaner". Ask for a measurabl
 
 - Code behavior: focused unit/integration tests or a minimal repro script.
 - CLI/TUI behavior: `control-cli`, terminal transcript, or demo recording.
-- UI behavior: `control-ui`, screenshots, accessibility snapshots, or browser traces. In this project, capture both sides with `verify-electron`: baseline from a worktree at the merge base (`git worktree add --detach <dir> $(git merge-base HEAD main)`), treatment from this checkout. Each worktree has its own session, so the two run side by side.
+- UI behavior: `control-ui`, screenshots, accessibility snapshots, or browser traces. In this project, capture both sides with `verify-electron`: baseline in a worktree at the merge base (`git worktree add --detach <dir> $(git merge-base HEAD main)`), treatment in this checkout. Each worktree has its own session, so both run at once.
 - API behavior: local HTTP/RPC request and response diff.
 - Performance: same-machine baseline/treatment timings or CPU profiles.
 - Memory: heap snapshots before and after the suspected operation.

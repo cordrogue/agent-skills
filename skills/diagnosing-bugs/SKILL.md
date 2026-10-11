@@ -5,13 +5,13 @@ description: "Always load when a bug, failure, or regression needs reproducing o
 
 # Diagnosing bugs: build the feedback loop first
 
-**This is the hard part.** If you have a **tight** pass/fail signal for the bug (one that goes red on _this_ bug), you will find the cause; bisection, hypothesis testing, and instrumentation all just consume it. Without one, no amount of reading code will save you. Spend disproportionate effort here.
+**This is the hard part.** With a **tight** pass/fail signal for the bug (one that goes red on _this_ bug), you will find the cause; bisection, hypothesis testing, and instrumentation all consume it. Without one, reading code won't save you. Spend disproportionate effort here.
 
-In `poteto-mode`, this is step 1 of the Bug fix playbook. Afterwards, find the cause with `principle-fix-root-causes` and land the failing check before the fix (`tdd`).
+In `poteto-mode`, this is step 1 of the Bug fix playbook. Then find the cause with `principle-fix-root-causes` and land the failing check before the fix (`tdd`).
 
 ## Redact captured evidence
 
-Replace secrets with `<REDACTED>` before showing commands, output, or artifacts. Read credentials from environment variables so they stay out of the command text. Quote only the signal-carrying lines from HAR files, logs, and payloads, which may contain auth headers or tokens. Request redacted captures when the developer supplies evidence.
+Replace secrets with `<REDACTED>` before showing commands, output, or artifacts. Read credentials from environment variables, not the command text. From HAR files, logs, and payloads, which may carry auth headers or tokens, quote only the signal-carrying lines. For developer-supplied evidence, request redacted captures.
 
 ## Ways to build one, in roughly this order
 
@@ -24,29 +24,23 @@ Replace secrets with `<REDACTED>` before showing commands, output, or artifacts.
 7. **Property or fuzz loop.** For "sometimes wrong" output, run many random inputs and look for the failure.
 8. **Bisection.** If it worked at a known commit, script the check and run `git bisect run` with it.
 9. **Differential loop.** Run the same input through the old and new build, or two configurations, and diff.
-10. **Human in the loop.** Last resort. Give the developer exact steps and record what they report, only after the options above are exhausted.
+10. **Human in the loop.** Last resort, once the options above are exhausted: give the developer exact steps and record what they report.
 
 ## Tighten the loop
 
-Once you have _a_ loop, make it:
-
-- **Faster:** cache setup, skip unrelated startup, narrow the scope.
-- **Sharper:** assert on the specific symptom, not "didn't crash".
-- **Deterministic:** pin time, seed randomness, isolate the filesystem.
-
-A 30-second flaky loop is barely better than none; a 2-second deterministic one is tight.
+Once you have _a_ loop, make it faster (cache setup, skip unrelated startup, narrow the scope), sharper (assert on the specific symptom, not "didn't crash"), and deterministic (pin time, seed randomness, isolate the filesystem). A 30-second flaky loop is barely better than none; a 2-second deterministic one is tight.
 
 **Non-deterministic bugs:** aim for a higher reproduction rate, not a clean repro. Loop the trigger, add stress, narrow timing windows. A 50% flake is debuggable; 1% is not, so keep raising the rate.
 
-**When you cannot build a loop:** say so, list what you tried, and ask the developer for what would reproduce it (the project state, a screen recording, exact steps). Don't move on to hypotheses without a loop.
+**When you cannot build a loop:** say so, list what you tried, and ask the developer for what would reproduce it (the project state, a screen recording, exact steps).
 
 ## Minimize the reproduction
 
-After reproducing the exact symptom, remove inputs, configuration, data, callers, or steps one at a time. Rerun after each removal and keep it only when the same failure remains. Stop when every remaining element contributes to the failure. For a flaky bug, compare reproduction rates and keep the trigger stable. Retain the original scenario for verification after the fix.
+After reproducing the exact symptom, remove inputs, configuration, data, callers, or steps one at a time, rerunning after each and keeping a removal only if the same failure remains. Stop when every remaining element contributes. For a flaky bug, compare reproduction rates and keep the trigger stable. Keep the original scenario for verifying the fix.
 
 ## State falsifiable hypotheses
 
-After the reproduction is minimized, rank competing hypotheses and state a prediction for each: "If X is the cause, changing Y should remove the failure, or changing Z should make it worse." Discard claims with no observable prediction. Share the ranked list, then test it without waiting for approval. Each probe changes one variable and rules hypotheses in or out. The Bug fix playbook uses this method for its cause search.
+Once minimized, rank competing hypotheses, each with a prediction: "If X is the cause, changing Y should remove the failure, or changing Z should make it worse." Discard claims with no observable prediction. Share the ranked list, then test without waiting for approval. Each probe changes one variable and rules hypotheses in or out.
 
 ## Done when
 
@@ -56,6 +50,6 @@ You can name **one command** you have **already run** (show it and its redacted 
 - **Deterministic:** same verdict every run (for flaky bugs, a pinned, high reproduction rate).
 - **Fast:** seconds, not minutes.
 - **Agent-runnable:** it runs unattended.
-- **Minimal:** each remaining input or step contributes to the exact failure; the original scenario is retained for final verification.
+- **Minimal:** each remaining input or step contributes to the exact failure.
 
 If you catch yourself reading code to build a theory before this command exists, stop. No red-capable command, no hypotheses.

@@ -1,55 +1,59 @@
 # Places
 
-Places lists every location at the viewed date and filters it by role or tier. A place's detail shows its parent, nested places, characters here and within influence, connected maps, and nearby characters. The writer adds a place, adds a child place with its parent preset, and records dated changes.
+Places is a framework record kind: a grid of place cards that a writer filters by role and tier. A place's page shows its fields, the records that point at it, the maps that show it and the characters near it, and offers adding a place inside it and recording dated changes. The form sets tier and role from the type and describes each tier and role option.
 
 ## Sub-features
 
-- `places-browse` lists places and filters by Role and Tier.
-- `places-detail` shows Parent, Places, Characters here, Within influence, Maps, and Nearby characters.
-- `places-navigate` follows nested, parent, and map links.
-- `places-create` saves a new place, or asks "Discard this new place draft?" on Cancel.
-- `places-child` creates a place with "Parent place" preset.
-- `places-change` saves a dated change from the viewed date onward.
-- `places-image` chooses or replaces a place image from the change date onward.
-- `places-end` ends a place at the viewed date after a confirm.
+- `places-browse` lists the places present at the viewed date as cards with image, tier, role (left out where it repeats the tier), summary and parent.
+- `places-filter` filters the collection by Role and Tier through the "Filter places" menu. Both filters live in page state, not the URL, so a reload or Back clears them.
+- `places-detail` shows Fields and Dates, then each reverse section that lists anything, in the framework's order Residents, Characters here, Within influence, Items here and Places, then Continuity when it has a finding, then the shell panels Scenes, Relationships, Maps and Nearby characters, then World history.
+- `places-maps` lists each map that shows the place at the viewed date, linked to the map focused on it.
+- `places-nearby` measures characters' pins from a chosen shape that names the place.
+- `places-create` saves a new place, with tier and role following the type until the author sets them, or asks "Discard this new place draft?" on Cancel.
+- `places-inside` opens the new place form from a place with Parent set to that place.
+- `places-change` saves a dated change from the viewed date onward, or corrects a value.
+- `places-remove` removes a place nothing names, and refuses one that a record, a relationship or a map shape names.
 
 ## How to get to it (user POV)
 
-- "Places" in the sidebar opens `#/places`. Each card is a button named `Select <name>`; a detail is `#/places/<id>`.
-- Collection toolbar has "Filter places" and "Add place". Detail toolbar has "Add child place", "Add change", and "History".
-- In Maps, "Open <place> record" in On this map opens the detail.
+- The sidebar button "Places" opens `#/places`. People sorts before Places in the sidebar, palette and pickers, by folder order.
+- Each card's name link, such as "Veyra-on-the-Tide", opens `#/places/<numeric id>`.
+- The collection toolbar has "Filter places", "Show ended" and "New place". The record toolbar has "End", "Add place inside", "More" (Remove), "Edit" and "History". The editor toolbar has "Change from this time", "Correct this value" and "Cancel".
+- In Maps, "Open <place> record" in On this map opens the record page, and each Maps panel link opens the map with `focus=place:<id>`.
 
 ## Driving it with verify-electron
 
 Preconditions:
 
-- A fresh `start`. Prefix every command with `node scripts/verify-electron.mjs`.
-- Fresh-sample ids are Veyra-on-the-Tide `3`, Tideglass Archive `4`, Glasswake Caldera `6`, and Mariner's Vault `7`. Resolve with `eval '(async () => (await window.app.listLocations({asOfTick:20000000})).map(p => [p.id, p.name]))()'`.
+- Fixtures are eleven places with ids 1 to 11, each with an image and on at least one map: Lumae 1 (world, place), The Sample World 2 (region, place, inside 1), Veyra-on-the-Tide 3 (settlement, settlement, inside 2), Tideglass Archive 4 (site, landmark, inside 3), Starhold Lighthouse 5 (site, landmark, inside 2), Glasswake Caldera 6 (region, wilderness, inside 2), Mariner's Vault 7 (site, bank, inside 3), Saltmarrow 8 (town; settlement, settlement, inside 2), Ashfold 9 (hamlet; settlement, settlement, inside 6), The Rim Road 10 (landmark; site, landmark, inside 6) and Drowned Lamp Shrine 11 (dungeon; site, landmark, inside 2). Places without a type note are type Location.
+- The Role, Tier and Type selects are native selects: `click` one, `type` the option's label, and `press Enter`.
+- Read a place the way the page does with `eval '(async () => JSON.stringify((await window.appHost.invoke("records.location.get", {id:3}, {at:20000000})).output))()'`, list them with `records.location.list`, and read stored points with `db 'select * from location_state_points where record_id = 3'`.
 
-- **Browse.** Run `click --role button --name 'Places'` and `snapshot main`. `list "Places"` holds eleven buttons such as "Select Lumae" and "Select Veyra-on-the-Tide".
-- **Filter.** Run `click --role button --name 'Filter places'`. `dialog "Filter places"` opens with `combobox "Role"` focused and `combobox "Tier"`. Run `press ArrowDown` three times; Role reads "Landmark" and the list shrinks to Tideglass Archive, Starhold Lighthouse, The Rim Road, and Drowned Lamp Shrine. Run `press Home` and `press Escape` to restore all eleven.
-- **Detail.** Run `click --role button --name 'Select Veyra-on-the-Tide'`. The route is `#/places/3`. `snapshot main` shows "Settlement", Parent link "The Sample World", headings "Places2", "Characters here4", "Within influence2", "Maps1", and `region "Nearby characters"`.
-- **Nested link.** Nested place links are named by name plus full summary. Read the summary with `listLocations`, then run `click --role link --name 'Tideglass Archive A vaulted archive where cinderglass ledgers preserve route testimony and disputed memories. Sera keeps disputed echoes marked separately from attested testimony, even when both concern the same route.'`. The route is `#/places/4`. Run `click --role link --name 'Veyra-on-the-Tide'` to return through Parent.
-- **Map link.** Run `click --role link --name 'Veyra Harbor and Tidewards'`. The route is `#/maps/3?focus=place%3A3`. `eval 'window.app.getLocationMapContext({locationId:3,asOfTick:20000000})'` lists map 3 and Veyra's boundary overlay.
-- **Create.** From Places, run `click --role button --name 'Add place'`. Heading "New place" shows "Name", "Type" (Location), "Summary", "Tier" (Site), "Role" (Place), "Parent place" (No parent), "Choose image", and group "Create this place starting at". Type `Verification cove` into Name and `A sheltered landing.` into Summary, then `click --role button --name 'Save'`. `wait --role heading --name 'Verification cove'` lands on `#/places/12`.
-- **Confirm the place.** `eval '(async () => (await window.app.listLocations({asOfTick:20000000})).filter(p => p.name === "Verification cove").map(p => [p.summary, p.tier, p.role, p.existsFromTick]))()'` returns `[["A sheltered landing.", "site", "place", 20000000]]`.
-- **Discard.** Open Add place, type `Discarded cove` into Name, and `click --role button --name 'Cancel'`. `dialog "Discard this new place draft?"` offers "Keep editing" and "Discard". Choose Discard; `listLocations` has no "Discarded cove".
-- **Child place.** On Veyra run `click --role button --name 'Add child place'`. "Parent place" reads "Veyra-on-the-Tide". Name it `Verification quay` and Save. The new detail's Parent links Veyra, and `listLocations` gives it `parentLocationId` `3`.
-- **Dated change.** On Veyra run `click --role button --name 'Add change'`. The editor shows "Save", "Cancel", "End", and group "Change from this date onward". Replace Summary with `Verification harbor summary.` and Save, then `click --role button --name 'Cancel'`. The detail shows the new summary. `listLocations({asOfTick:19999999})` still returns the original summary for id `3`.
-- **Image.** In the "Add place" form, `click --role button --name 'Choose image' --file "$HOME/.cache/agent-swarm/<dir>/<image>.png"`. `dialogs` lists an `open` dialog answered with that path and the button becomes "Replace image". Save; `listLocations` gives the new place an `imageAssetPath` named by the file's SHA-256. On Veyra's Add change, `click --role button --name 'Replace image' --file <png>` and Save; `imageAssetPath` for id `3` changes at `20000000` and keeps `8027fcf0…png` at `19999999`. Without `--file` the picker cancels and nothing changes.
-- **End, cancelled.** On Veyra's Add change, `click --role button --name 'End' --dismiss`. The confirm reads "End this place at the viewed story date, Bloomtide 1, Year 42 · 21:20? The change date above applies only to Save." and is answered `false`; `listLocations` still has id `3` at `20000000`.
-- **End.** Repeat without `--dismiss`. The detail reads "This place no longer exists at Bloomtide 1, Year 42 · 21:20." and World history adds "Existence Ended". Id `3` is gone from `listLocations({asOfTick:20000000})`, present at `19999999`, and the head revision's `commandKey` is `location.endAtTick`.
+- **Browse.** `click --role button --name 'Places'`. Main has the list "Places" with eleven cards in name order. The Veyra-on-the-Tide card shows its image, "Settlement" once, its summary and "The Sample World".
+- **Filter.** `click --role button --name 'Filter places'`. The dialog "Filter places" has the selects "Role" and "Tier", each starting at "All". Role "Settlement" leaves Ashfold, Saltmarrow and Veyra-on-the-Tide, the URL stays `/places`, and the button reads "Filter places, 1 active". Adding Tier "Region" shows "No matching places" and "Filter places, 2 active". Both filters survive a viewed-date move. "Clear filters" restores all eleven. Pick a role again and reload: the filter is gone and the button reads "Filter places".
+- **Detail.** `shot --route '#/places/3?worldTick=20000000'`. The description list "Fields" shows Name, Summary, Type "Location", Tier "Settlement", Role "Settlement", Image and Parent "The Sample World". The headings below are Residents (Mara Venn, Oda Vell, Ysolde Dunmore), Characters here and Within influence (Oda Vell, Sera Nhal), Places (Mariner's Vault, Tideglass Archive), Continuity, Scenes, Relationships, Maps, Nearby characters and World history. Starhold Lighthouse (`#/places/5`) shows Items here after Residents.
+- **Maps panel.** On Veyra, "Maps" lists "Veyra Harbor and Tidewards". `click --role link --name 'Veyra Harbor and Tidewards'` opens `#/maps/3?focus=place%3A3&worldTick=20000000`. Every sample place has a map; the place Create saves reads "No connected maps at this story date".
+- **Nearby characters.** On Veyra, "Nearby characters" has the select "Proximity map" ("Veyra Harbor and Tidewards · Veyra-on-the-Tide"), the spinbutton "Radius in map units" at 100, and "No recorded positions within this radius." At radius 1000 it lists Oda Vell at 143.2 units and Sera Nhal at 300.2 units. The place Create saves reads "Place this location on a map to find nearby characters."
+- **Create.** From Places, `click --role button --name 'New place'`. The form has the textboxes "Name" and "Summary", the combobox "Type" (Location), the groups "Tier" and "Role" as radio lists with a description beside each option, the group "Image", the combobox "Parent", and the group "Exists from". Type "Town" moves Tier and Role to Settlement. Choose Tier "District" with `click 'main form fieldset:first-of-type input[value=district]'`, because Role has a District too; then Type "Kingdom" keeps Tier at District and moves Role to Place. Name it `Verification cove` and `click --role button --name 'Save'`; `#/places/12` opens with Type Kingdom, Tier District and Role Place.
+- **Discard.** Open New place, type `Discarded cove` into Name, and `click --role button --name 'Cancel'`. The dialog "Discard this new place draft?" offers "Keep editing" and "Discard".
+- **Add place inside.** On The Sample World (`#/places/2`), `click --role button --name 'Add place inside'`. The route becomes `#/places?new=%7B%22parent%22%3A2%7D&worldTick=20000000` and the New place form opens with Parent "The Sample World". Name it and Save; the new page's Parent links The Sample World, and The Sample World lists it under Places.
+- **Dated change.** On Veyra, `click --role button --name 'Edit'`, replace Summary, and `click --role button --name 'Change from this time'`. World history adds a "Bloomtide 1, Year 42 · 21:20" entry with the new summary, and `records.location.get` at tick 19999999 still returns the earlier summary.
+- **Remove, refused.** `click --role button --name 'More'`, choose the menu item "Remove", and confirm Remove in the dialog "Remove this place?". Records name every sample place. The refusal lists three holders, map shapes before records, and counts the rest: Glasswake Caldera (`#/places/6`) reads "Glasswake Caldera can't be removed. Glasswake Expedition Logistics (Map) lists it as map boundary, Mara Venn (Character) lists it as Location, Kesh Ash (Character) lists it as Location, and 4 more." To see a map shape's clause, give the place Create saved a boundary with `mcp create_map_overlay '{"mapId":4,"label":"","content":{"kind":"boundary","locationId":12,"points":[{"x":10,"y":10},{"x":60,"y":10},{"x":60,"y":60},{"x":10,"y":60}]},"effectiveAt":{"kind":"tick","worldTick":20000000},"operationId":"<a new uuid>"}'`; Remove then reads "Verification cove can't be removed. Glasswake Expedition Logistics (Map) lists it as map boundary." A place nothing names, such as the one Add place inside saved, is removed and the page returns to Places.
+- **Cycle.** Edit The Sample World. Click the combobox "Parent", `press Control+a`, `type 'Veyra'`, click the option "Veyra-on-the-Tide", and run Change from this time. The form refuses it under Parent: "The Sample World would be part of itself from Bloomtide 1, Year 42 · 21:20: its parent is Veyra-on-the-Tide, which is part of The Sample World. Choose a place outside it." Cancel asks "Discard unsaved changes to this place?".
 
 ## Gotchas
 
-- On a Maps route with the sidebar in "Map tools" mode, `button "Places"` is the Places layer toggle, not navigation. Choose "Browse" first, or the click hides place overlays.
-- Section headings carry their counts in the accessible name, such as "Characters here4".
-- "End" ends the place at the viewed date, not at the editor's change date. Run it last; Veyra's characters then show lifetime warnings.
-- Nearby characters is covered in `character-positions.md`.
+- Places has no legacy commands. Read and write places through `window.appHost.invoke("records.location.<operation>", ...)`, `mcp get_entity '{"entityType":"location","id":3,"at":20000000}'`, or `db`.
+- Reverse sections list names only, with no summary line or count. Places shows only the places directly inside.
+- Maps and Nearby characters are shell panels: they sit below Relationships and above World history, and hide while editing.
+- On a Maps route with the sidebar in "Map tools" mode, `button "Places"` is the Places layer toggle, not navigation. Choose "Browse" first.
+- An ended parent warns under Continuity rather than refusing the save.
+- Nearby characters' radius behavior is covered in `character-positions.md`.
 
 ## Source and tests
 
-- `src/renderer/features/locations/LocationPage.tsx`, `LocationEditor.tsx`, `LocationProfileView.tsx`, `LocationInsightsView.tsx`.
-- `src/renderer/features/shared/RecordPageView.tsx`, `RecordFields.tsx`, `recordPage.ts`; `src/shared/location-ipc.ts`.
-- Fixtures in `samples/<sample>/seed/places.json`.
-- `npm test -- src/renderer/features/locations/LocationPage.test.tsx src/backend/services/location-service.test.ts src/backend/services/location-service.temporal.test.ts`.
+- `src/features/location/contract.ts` (fields, types, statuses, "Exists from"), `ui/entrypoint.ts` (grid, Role and Tier filters), `ui/card.tsx`, `ui/editor.tsx` (type defaults), `ui/fields/tier.tsx`, `ui/fields/role.tsx`, `ui/actions.tsx` (Add place inside).
+- `src/renderer/features/places/placePanels.tsx` (Maps and Nearby characters), registered in `src/renderer/components/app-shell/frameworkShell.ts`.
+- `src/framework/host/records/legacy-holders.ts` (map shapes that block removal).
+- Fixtures in `samples/<sample>/seed/location.json`.
+- `npm test -- src/features/location src/app/record-kinds.test.ts src/renderer/features/places src/renderer/lib/frameworkChoiceFilters.test.tsx`.

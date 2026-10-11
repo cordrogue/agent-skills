@@ -75,6 +75,35 @@ append_row() {
 	printf '%s\t%s\t%s\t%s\t%s\t%s\n' \
 		"$ts" "$(clean "$1")" "$(clean "$2")" "$(clean "$3")" "$(clean "$4")" "$(clean "$5")" \
 		>> "$logfile"
+	warn_evidence "$4"
+}
+
+repo_root="$(git -C "$logdir" rev-parse --show-toplevel 2>/dev/null || true)"
+warn_evidence() {
+	local token found candidate tokens
+	read -r -a tokens <<< "$(printf '%s' "$1" | tr ',;()<>[]`"'"'"'' ' ')"
+	for token in "${tokens[@]}"; do
+		token="${token%.}"
+		token="${token%%:[0-9]*}"
+		case "$token" in *://*) continue ;; "~/"*) token="$HOME/${token#\~/}" ;; esac
+		[[ "$token" =~ \.[A-Za-z][A-Za-z0-9]{0,7}$ ]] || continue
+		found=""
+		if [[ "$token" == /* ]]; then
+			[ -e "$token" ] && found="$token"
+		else
+			for candidate in "$logdir/$token" ${repo_root:+"$repo_root/$token"}; do
+				if [ -e "$candidate" ]; then
+					found="$candidate"
+					break
+				fi
+			done
+		fi
+		if [ -z "$found" ]; then
+			printf 'log.sh: warning: evidence %s does not exist beside the log or at the repo root.\n' "$token" >&2
+		elif git -C "$logdir" check-ignore -q -- "$found" 2>/dev/null; then
+			printf 'log.sh: warning: evidence %s is gitignored, so the repo will not hold it.\n' "$token" >&2
+		fi
+	done
 }
 
 if [ "${#rows[@]}" -eq 0 ]; then

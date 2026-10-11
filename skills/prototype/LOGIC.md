@@ -34,7 +34,7 @@ Pick whichever shape best fits the question being asked, *not* whichever is easi
 
 ### 3. Build the shareable HTML file
 
-Create the demo under an isolated temporary directory, separate from production source. Use in-memory state; when persistence is the question, use a clearly named scratch database or file and never the developer's project.
+Create the demo in an isolated temporary directory, outside production source. Use in-memory state; if persistence is the question, use a clearly named scratch database or file, never the developer's project.
 
 One file, plain HTML/CSS/JS: no framework, no bundler, no server, everything inline so it opens by double-click and survives being emailed around. Anyone should be able to run it by opening it.
 
@@ -42,24 +42,24 @@ Write it for a non-developer. Every label is in **domain language**, not code: b
 
 Lay it out with a clean hierarchy, top to bottom:
 
-1. **Title and question label** for what this demo lets you explore. Put the full explanation in the handoff.
+1. **Title and question label** for what this demo lets you explore.
 2. **Current state**: the full relevant state, rendered as a readable panel (labelled fields, not a raw JSON dump), re-rendered after every click so the change is visible. Where it helps a non-developer follow, call out what just changed.
 3. **Free-play buttons**: one button per action, always available, so anyone can poke at the model in any order. Each click dispatches its action and re-renders the state.
 4. **Guided walkthroughs**: a set of **scenarios**, one per tab. For this project, each tab holds a scenario name and the ordered **buttons to press**, with the scenario description in the handoff. Outside this project, the tab can also show a short plain-language description of the scenario and what to watch for. Each step is a real button: clicking it performs that action and moves to the next step. Starting a walkthrough resets to a known initial state so the scenario runs the same way every time.
 
 Choose scenarios that demonstrate the awkward cases, the ones hard to reason about on paper: the happy path, a tricky edge case, an attempt at something that should be illegal.
 
-For this project, follow [ui-preferences](../ui-preferences/SKILL.md) and the [theme contract](../../../docs/agents/contracts/theme.md): true black, dense layout, opaque surfaces, instant state changes, and the existing font rules. Use labels and values in the demo; put scenario explanations in the handoff. For a standalone demo outside this project, use a restrained layout with clear state and buttons, without animations or decorative effects.
+For this project, follow [ui-preferences](../ui-preferences/SKILL.md) and the [theme contract](../../../docs/agents/contracts/theme.md): true black, dense layout, opaque surfaces, instant state changes, and the existing font rules. For a standalone demo outside the app, use a restrained layout with clear state and buttons, without animations or decorative effects.
 
 ### 4. Hand it over
 
-Drive the free-play actions and every guided scenario yourself before handing it over. Verify that each walkthrough resets to a known state, illegal actions produce the intended result, and the visible state matches the model. Use the available browser tooling through [control-ui](../control-ui/SKILL.md). Before launching a visible GUI window on this machine, read [silent-workspace-test](../silent-workspace-test/SKILL.md).
+Before handing it over, drive the free-play actions and every guided scenario yourself with the browser tooling from [control-ui](../control-ui/SKILL.md). Check that each walkthrough resets to a known state, illegal actions produce the intended result, and the visible state matches the model. Before launching a visible GUI window on this machine, read [silent-workspace-test](../silent-workspace-test/SKILL.md).
 
-Send them the file, or show it through the browser tooling selected by [control-ui](../control-ui/SKILL.md). They'll click through the walkthroughs and free-play whenever they get to it; the interesting moments are when they say "wait, that shouldn't be possible" or "huh, I assumed X would be different"; those are the bugs in the _idea_, which is the whole point. If they want new actions or a new scenario, add them. Prototypes evolve.
+Send them the file, or show it through that browser tooling. They'll click through the walkthroughs and free-play whenever they get to it; the interesting moments are when they say "wait, that shouldn't be possible" or "huh, I assumed X would be different"; those are the bugs in the _idea_, which is the whole point. If they want new actions or a new scenario, add them. Prototypes evolve.
 
 ### 5. Capture the answer and the prototype
 
-Report the question, observed results, decision, and temporary HTML path. Keep the demo available while the developer reviews it. When the developer chooses the model, implement it through the Feature or Architect workflow, following production conventions and [Landing on main](../poteto-mode/playbooks/landing-on-main.md). Record the decision in the existing work artifact or commit. Delete the temporary demo after promotion unless the developer asks to retain it. The HTML shell stays outside production.
+Report the question, observed results, decision, and temporary HTML path, and keep the demo available while the developer reviews it. Once they choose the model, implement it through the Feature or Architect workflow, following production conventions and [Landing on main](../poteto-mode/playbooks/landing-on-main.md). Record the decision in the existing work artifact or commit. Delete the temporary demo after promotion unless the developer asks to keep it.
 
 ## Anti-patterns
 

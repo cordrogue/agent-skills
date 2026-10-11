@@ -1,6 +1,7 @@
 ---
 name: domain-modeling
 description: Build and sharpen a project's domain model. Use when discussing codebase terminology, writing or editing the glossary (docs/GLOSSARY.md), or recording or editing an ADR.
+paths: ["docs/GLOSSARY.md", "docs/agents/decisions/**"]
 ---
 
 # Domain Modeling
