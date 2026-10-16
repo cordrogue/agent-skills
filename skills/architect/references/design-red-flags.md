@@ -36,7 +36,7 @@ Remove it or move responsibility to the module that can complete the operation. 
 
 More than one module writes the same state or keeps its own copy of it. An agent that edits one writer can't see the others, so their rules diverge.
 
-Give each piece of state one owner. Other modules read it or ask the owner to change it.
+Give each piece of state one owner. Other modules read it or ask the owner to change it. A design that adds a writer to shared storage, or exempts one from other writers' rules, lists every existing reader and rule and how each treats the new rows.
 
 ## Two ways to do one task
 

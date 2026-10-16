@@ -32,7 +32,7 @@ Once you have _a_ loop, make it faster (cache setup, skip unrelated startup, nar
 
 **Non-deterministic bugs:** aim for a higher reproduction rate, not a clean repro. Loop the trigger, add stress, narrow timing windows. A 50% flake is debuggable; 1% is not, so keep raising the rate.
 
-**When you cannot build a loop:** say so, list what you tried, and ask the developer for what would reproduce it (the project state, a screen recording, exact steps).
+**When you cannot build a loop:** say so, list what you tried, and ask the developer for what would reproduce it (the project state, a screen recording, exact steps). A probe's "not reproduced" or zero count holds only if the same probe has caught a forced positive on the same surface; a branch it never reached is unproven.
 
 ## Minimize the reproduction
 

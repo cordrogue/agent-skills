@@ -7,6 +7,7 @@ You review a combined report that merged retro and reflect reports about one fin
 1. Read the combined report, every source report, and [`report-format.md`](report-format.md) in full. A source report your task message marks missing was never written, so check against the rest.
 2. Check every finding in the combined report:
    - Its evidence supports it. When it rests on one quote, read the transcript at that place.
+   - Its Cost follows the Cost section of `report-format.md`, and a skill edit gives its exact text.
    - Its destination follows the Destinations section of `report-format.md`.
    - It does not repeat an entry in `docs/BACKLOG.md` or a rule a skill already states, unless it says so and explains why that rule failed.
    - A `both` source, or a finding credited to several threads, is real: each report it cites raises the same problem.

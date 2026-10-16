@@ -79,7 +79,8 @@ Use it when the developer asks to see the app. For a quick check of your own:
 - A record kind under `src/features` gets the record-kind suite
   (`src/framework/testing/record-kind-suite.ts`), which
   `src/app/record-kinds.test.ts` runs against every discovered kind with every
-  feature's rules off (`rules: null`). Test the code a feature writes,
+  feature's rules on, except the kinds in `rulesRefusingSuiteInputs`. Test the
+  code a feature writes,
   including its own rules and host commands, with `createTestHost` from
   `@app/framework/testing`. Run the suite with
   `npm test -- src/app/record-kinds.test.ts`.
@@ -93,11 +94,14 @@ Use it when the developer asks to see the app. For a quick check of your own:
 - Every test must be able to go red for a defect. For each guard or refusal
   clause the change adds or keeps, delete the clause and watch a test fail
   with `node scripts/mutate.mjs <mutations.json>`, which restores each file
-  and reports a mutation whose text no longer matches. Apply
+  and reports a mutation whose text no longer matches. A surviving mutant
+  means a test is missing: write the input that tells the two versions apart
+  before deleting the clause. Apply
   [principle-test-behavior-not-implementation](../principle-test-behavior-not-implementation/SKILL.md).
   Cut tests that inspect production source text, snapshot static JSX without a
   behavioral assertion, or guard against deleted features; bundled-source
   constraints belong in build or package scans.
+- A pure function with a law, such as a round trip, an order, or an inverse, gets a `test.prop` from `@fast-check/vitest` beside its example tests. Set arbitrary bounds from the schema.
 - A replacement for an existing read keeps today's behavior only when a test
   compares it with a trunk worktree on today's data and after each of a short
   run of ordinary edits, such as a later edit, an end and a backdated addition.
@@ -107,7 +111,8 @@ Use it when the developer asks to see the app. For a quick check of your own:
   is correctness evidence only when a different agent derived it from the
   spec's worked examples. One by the code's own author shares its reading of
   the spec, so report its agreement as regression protection.
-- File size is a review judgment, with no file-length or complexity ceilings.
+- Below `npm run lint`'s 300-line limit for non-test source (exceptions in
+  `config/file-growth-allowlist.json`, which only shrinks), file size is a review judgment.
 - For a test-first bug fix, follow [tdd](../tdd/SKILL.md).
 
 ## Read when

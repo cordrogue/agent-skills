@@ -45,7 +45,7 @@ Lay it out with a clean hierarchy, top to bottom:
 1. **Title and question label** for what this demo lets you explore.
 2. **Current state**: the full relevant state, rendered as a readable panel (labelled fields, not a raw JSON dump), re-rendered after every click so the change is visible. Where it helps a non-developer follow, call out what just changed.
 3. **Free-play buttons**: one button per action, always available, so anyone can poke at the model in any order. Each click dispatches its action and re-renders the state.
-4. **Guided walkthroughs**: a set of **scenarios**, one per tab. For this project, each tab holds a scenario name and the ordered **buttons to press**, with the scenario description in the handoff. Outside this project, the tab can also show a short plain-language description of the scenario and what to watch for. Each step is a real button: clicking it performs that action and moves to the next step. Starting a walkthrough resets to a known initial state so the scenario runs the same way every time.
+4. **Guided walkthroughs**: a set of **scenarios**, one per tab. For this project, each tab holds a scenario name and the ordered **buttons to press**, with the scenario description in the handoff. Outside the app, the tab can also show a short plain-language description of the scenario and what to watch for. Each step is a real button: clicking it performs that action and moves to the next step. Starting a walkthrough resets to a known initial state so the scenario runs the same way every time.
 
 Choose scenarios that demonstrate the awkward cases, the ones hard to reason about on paper: the happy path, a tricky edge case, an attempt at something that should be illegal.
 

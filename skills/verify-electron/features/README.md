@@ -15,13 +15,13 @@ Time
 - [Viewed time](world-time.md). Footer clock, adjacent changes, date editor, scrubber, route, dated record changes.
 - [Story present and calendar](settings-world-time.md). Draft and save story present; edit, preview, discard, and validate the calendar.
 - [Timeline](timeline.md). Chronology, Line, Calendar, manuscript occurrences, context menu, uncertain dates.
-- [Record world history](temporal-history.md). Editable relationship, map, and overlay histories: list, revise, unknown date, remove.
+- [Record world history](temporal-history.md). A relationship's editable World history and the legacy map and overlay histories: list, revise, move or unknown date, remove.
 
 People
 
 - [People list and detail](people-list-detail.md). People collection, Show dead, views, opening a person, profile with Home, Location and Influence, links, history.
 - [Editing people](people-editing.md). Add a character, dated changes and corrections, discard a draft, portraits, death as the Dead status.
-- [Relationships](people-relationships.md). Browse, change, correct, family details, history, create, custom types, remove.
+- [Relationships](people-relationships.md). Browse, create from either end, family fields, custom roles, change, correct, end, remove.
 - [Person notes](people-notes.md). Notes tab, author-only marker, dated changes, revisions, history, ending, drafts across dates, Narrative on Profile.
 - [Character positions](character-positions.md). Dated positions from the profile and the map Character tool, presence, nearby characters.
 
@@ -46,8 +46,8 @@ Records
 
 Canvases
 
-- [Relationship graph](relationship-graph.md). Select, open, filter, drag, pan, fit, settings, sections.
-- [Board](board.md). Record cards from sidebar drags, sticky notes, arrows, delete with undo, preview and open.
+- [Relationship graph](relationship-graph.md). Relationship and reference lines, select, open a record or relationship, filter, drag, pan, fit, settings, sections.
+- [Board](board.md). Record and map cards from sidebar drags, sticky notes, arrows, undo of every gesture, preview and open.
 - [Workspace](workspace.md). Named workspaces, adding cards, layout, split, resize, move, image shape, delete.
 
 Writing

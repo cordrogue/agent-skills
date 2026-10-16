@@ -1,6 +1,6 @@
 # Cultures
 
-Cultures is a framework record kind: a gallery of cultures, ethnicities, languages, traditions and professions, each with a name, summary, subtype, and image. the sample project has none.
+Cultures is a framework record kind: a gallery of cultures, ethnicities, languages, traditions and professions, each with a name, summary, subtype, and image. The sample project has none.
 
 ## Sub-features
 

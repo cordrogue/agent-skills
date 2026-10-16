@@ -120,7 +120,7 @@ permission escalation, then check status with the same visibility.
 
 - If the generated sample is not at the current database baseline, stop the
   session, run `npm run sample:build`, and start again.
-- If a selected path has no project manifest, keep the user's project
+- If a selected path has no the app project manifest, keep the user's project
   intent explicit: ask for or build the intended project with
   `npm run sample:build -- <dir>`. Use the generated sample project only
   when that matches the request.

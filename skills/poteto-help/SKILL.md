@@ -45,6 +45,7 @@ The default answer is `poteto-mode`, which runs most of the others when its step
 | Catch up on their own recent work on a topic | [`recall`](../recall/SKILL.md) |
 | Catch up on everything in this chat since their last message, with enough context to decide each action item | [`ketchup`](../ketchup/SKILL.md) |
 | Hear the last reply again in plain words | [`bro`](../bro/SKILL.md) |
+| See every check, skill, loaded file and running plan feeding the agents, and what changed | [`command-center`](../command-center/SKILL.md) |
 | Have their own plan or idea questioned until it holds up | [`grilling`](../grilling/SKILL.md) |
 | Settle the project's words, the glossary, or record a decision | [`domain-modeling`](../domain-modeling/SKILL.md) |
 | Settle types and module shape before code that crosses a function boundary | [`architect`](../architect/SKILL.md) |
@@ -76,7 +77,7 @@ The default answer is `poteto-mode`, which runs most of the others when its step
 | Walk through steps only they can do, such as credentials or a third-party dashboard | [`wizard`](../wizard/SKILL.md) |
 | Stop agents from repeating the same mistakes in this repo | [`correct`](../correct/SKILL.md) |
 | Clean up after a long task: retro, reflect, one combined report, and the backlog | [`wrap-up`](../wrap-up/SKILL.md) |
-| Wrap up every thread of a multi-thread plan, then decide on all their findings at once | [`wrap-up-stack`](../wrap-up-stack/SKILL.md) |
+| Wrap up every thread of a multi-thread plan, or an orchestrator's tree of nested tasks, then decide on all their findings at once | [`wrap-up-stack`](../wrap-up-stack/SKILL.md) |
 | Turn what a finished task taught into skill edits | [`reflect`](../reflect/SKILL.md) |
 | Look back on a session for changes to the agents' tools, checks, and docs | [`retro`](../retro/SKILL.md) |
 | Turn their own working habits into a personal mode skill | [`automate-me`](../automate-me/SKILL.md) |

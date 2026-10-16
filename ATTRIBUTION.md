@@ -95,8 +95,15 @@ These skills build on published ideas and name them where they are used:
 - Apple's WWDC talk *Principles of Great Design*, as summarized by Emil
   Kowalski (`design-foundations`).
 
+## Notes
+
+`notes/dune-principles.md` summarizes the principles behind Dune, Lauren
+Tan's framework for Grok Bot, from her public talk, workshops, and posts on
+X, which it links. It quotes her five rules and slide text; the rest is a
+paraphrase. Dune's source is not public and none of it is copied here.
+
 ## Written for this repo
 
-`alpha-build`, `backlog`, `repeat-mistakes`, `run-app`,
+`alpha-build`, `backlog`, `command-center`, `repeat-mistakes`, `run-app`,
 `silent-workspace-test`, `testing`, `ui-preferences`, `user-communication`,
 `verify-electron` (including its `features/` map), `wrap-up`, `wrap-up-stack`. MIT, see `LICENSE`.

@@ -6,7 +6,7 @@ Invoked at the end of every other playbook. Work lands on local `main`, with no 
 
 **Commits.** Commit liberally. Before landing, rebase into small, ordered commits, each landable on its own and ordered to tell the story. Amend when the fix belongs in a just-made commit. New commit when separable. Stage only the paths you changed (`git add <paths>`, never `git add -A` at the repository root). A delegate brief cuts its steps so each one ends green, and keeps each deletion in the step with the tests and fixtures that name it. A step that cannot end green commits as `WIP:` before the turn ends.
 
-**Cleanup.** Run the **deslop** skill over the diff before commit and the **no-comments** skill before landing. Write every commit message with **technical-writing** (every layer except Diátaxis, one word per action, keep articles, a plain verb over `-ing` where one works), then apply **unslop**.
+**Cleanup.** Run the **deslop** skill over the diff before commit and the **no-comments** skill before landing. Write every commit message with **technical-writing** (every layer except Diátaxis, one word per action, keep articles, a plain verb over `-ing` where one works), then apply **unslop**. When a change alters behavior a skill describes, grep `.agents/skills` for the old claim and fix it in the same commit.
 
 **Subjects.** Write the subject as a short, plain imperative sentence, as `git log --oneline -20` shows, with no Conventional Commits prefix and no trailing period. Name a real symbol when one carries the change, as in `Hash symlink targets in the feedback check instead of reading them`.
 

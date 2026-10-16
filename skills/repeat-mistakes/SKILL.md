@@ -30,6 +30,7 @@ A row is done when its "Enforced by" cell names a check, hook, type, or design t
 | Time startup with `time-to-content` on a window nobody is viewing; first paint never records there. | `scripts/startup-profile.mjs` fails when no run paints |
 | A rewrite never drops a program's `docs/work/*/decisions.tsv`. | `.githooks/reference-transaction` refuses a branch move onto a commit that deletes it without a `Guardrail-Change:` trailer |
 | Checkpoint with a `WIP:` subject, never `--no-verify`, and squash `WIP:` commits before main. | `.githooks/commit-msg` skips the full check for `WIP:`; `.githooks/reference-transaction` and `.githooks/pre-push` refuse `WIP:` commits on main, and `reference-transaction` refuses a main tip whose tree no feedback check passed; the Bash guard refuses `--no-verify`, hooks turned off, and `git filter-branch` |
+| Program scratch goes under `~/.cache/agent-swarm/<unit>/`, not `/tmp`. | `scripts/agent-hooks/tmp-scratch.mjs` |
 
 ## Skill text only
 
@@ -39,21 +40,21 @@ A row is done when its "Enforced by" cell names a check, hook, type, or design t
 | Each Codex lane gets the sandbox and worktree its job needs. | `poteto-mode/references/models.md`, the lane table |
 | A unit merges when no P1 and no regression is open. After round 4, propose a scope cut. | `swarm/references/fix-rounds.md` |
 | Cases the spec doesn't cover go to the developer as one batch of decisions. | `swarm/references/fix-rounds.md` |
-| A fix brief names the whole defect family, not one scenario. | `swarm/references/fix-rounds.md`, Fix briefs |
+| A fix brief names the whole defect family, not one scenario. | `swarm/references/fix-rounds.md`, Fix briefs; `poteto-mode/playbooks/bug-fix.md`, step 3 |
 | `PASS` needs the comparison run and the surface reached; `BLOCKED` is never upgraded. | `swarm` Phase B and C |
 | Gate on the developer only units meant to look or behave differently. | `poteto-mode/playbooks/multi-phase-plan.md`, Verification |
 | A program built to prove one claim starts with a thin real slice of it. | `poteto-mode/playbooks/multi-phase-plan.md`, step 2 |
 | Another model reviews a plan before it goes to the developer. | `poteto-mode/playbooks/multi-phase-plan.md`, step 7 |
-| A subagent waits for a background helper by ending its turn, except after a SendMessage resume, when a turn end is its report. | `poteto-mode` Subagents, Waiting as a subagent |
+| A subagent runs a short command in the foreground and waits on longer work by ending its turn, except after a SendMessage resume, when a turn end is its report. | `poteto-mode` Subagents, Waiting as a subagent |
 | Resume an agent stopped by a usage limit instead of relaunching it. | `swarm` Phase B |
 | Start a fresh helper each fix round; replace an owner after two rounds. | `poteto-mode` Subagents; `swarm/references/fix-rounds.md` |
 | One writer per worktree; readers get a detached worktree at a pinned commit. | `poteto-mode` Subagents; `poteto-mode/references/harness-tools.md` |
-| Program scratch goes under `~/.cache/agent-swarm/<unit>/`, not `/tmp`. | `poteto-mode/references/harness-tools.md`, Scratch |
 | Measure an agent's cost with `scripts/agent-cost.mjs`, not `subagent_tokens`. | `poteto-mode/references/harness-tools.md`, Subagents |
 | Stop the loop while every open item waits on the developer. | `poteto-mode/playbooks/autonomous-run.md`, step 2 |
 | Keep one running list of the defaults applied for the developer. | `poteto-mode` Non-negotiables; `user-communication` |
-| A reply that holds a decision opens with it, in terms of what the developer would see. | `user-communication`, Writing the reply |
+| A reply that holds a decision ends with it, in terms of what the developer would see. | `user-communication`, Writing the reply |
 | Keep replies short: what the developer asked, in its smallest form. | `user-communication`, Writing the reply |
 | Speed on larger projects stays in alpha scope. | `alpha-build`, One project's data |
 | Confirm domain assumptions taken from current code before redesigning. | `architect` Phase A |
 | A check written by the code's own author proves agreement, not correctness. | `testing`, Writing tests |
+| A probe's "not reproduced" or zero count needs a forced positive on the same surface. | `diagnosing-bugs`, When you cannot build a loop; `benchmark-checklist`, question 7 |

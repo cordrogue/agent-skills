@@ -1,6 +1,6 @@
 ---
 name: ui-preferences
-description: "Always load when building, changing, prototyping, or reviewing the app's UI: components, styles, layout, copy, or motion."
+description: "Always load when building, changing, prototyping, or reviewing the app's UI: components, styles, layout, copy, motion, or input behavior such as focus and saving, even inside a data fix."
 ---
 
 # UI preferences
@@ -21,4 +21,5 @@ Make the change that was asked for without redesigning around it. Raise a broade
 - Avoid em dashes.
 - Almost no animation. State changes render instantly, with no transitions, keyframes, animated blur, or other motion unless the developer asks for a specific one; existing ones are removal candidates.
 - One interface font, one size, one weight, except the authored-type surfaces in the theme contract.
+- Choose typing behavior for asynchronous draft saves. Default to ignoring edits during the form's own save, keeping focus, and disabling only its buttons. A disabled field drops focus, so the next key fires page shortcuts.
 - Pay attention to performance details such as dropped frames, misleading loading states, and stale UI.

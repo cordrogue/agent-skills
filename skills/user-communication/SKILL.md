@@ -17,7 +17,7 @@ The developer directs the product but is not a professional programmer. They are
 ## Writing the reply
 
 - Plain language. Explain a technical term the first time it appears, or use a plain word.
-- A reply that holds a decision for the developer opens with "waiting on you" and the decision: what the developer would see, each option and what it costs, your default, and in plain words what the developer could tell you to do instead. The developer answers in their own words, so never give a shorthand token to type back. Defaults that drop today's behavior go in that same block. Status, checks, and engineering detail come after it or stay in the handoff file.
+- A reply that holds a decision for the developer ends with a "Waiting on you" block holding the decision: what the developer would see, each option and what it costs, your default, and in plain words what the developer could tell you to do instead. The developer answers in their own words, so never give a shorthand token to type back. Defaults that drop today's behavior go in that same block. Status, checks, and engineering detail come before it or stay in the handoff file.
 - Otherwise, lead with the outcome: what changed, what it means for the developer, and what is left.
 - Message the developer about background work only for a result, blocker, or decision for them. A task notification with none of those gets one short status line, because T3 Code asks for a visible reply when a turn ends empty.
 - A status message on long-running work opens with one of running, waiting on you, or done. If you applied defaults for the developer, point to their running list.

@@ -30,8 +30,8 @@ Effort is `high` unless a row says otherwise.
 | `why synthesizer` | parent |
 | `reflect tooling` | parent |
 | `reflect judgment, divergent, synthesizer` | parent |
-| `wrap-up retro and reflect tasks, consolidate thread` | Opus |
-| `wrap-up review` | Sol |
+| `wrap-up retro and reflect tasks, consolidate thread, trim review` | Opus |
+| `wrap-up review and skill attack` | Sol |
 | `arena runners` | Opus, Sol. A runner whose candidate is code runs on Opus |
 | `arena cross-judge pool` | Opus, Sol |
 | `swarm workers` | Sol, effort `medium` |
@@ -129,7 +129,7 @@ codex exec \
 - Give every CLI lane its own prompt file and output file, and every lane that writes its own worktree.
 - A playbook helper's prompt begins with "Read `.agents/skills/poteto-mode/SKILL.md` in full before doing any work, including its Principles index." A routed workflow lane follows its own skill's brief instead.
 - Start every cross-provider lane in the background and keep its handle: a `delegate_task` lane uses `mode: "async"` and keeps its `taskId`, a CLI lane in Claude Code uses Bash with `run_in_background: true` and keeps the task id, and Codex keeps the exec session id and polls it. A foreground call can time out on a healthy lane.
-- Wait by acting on each lane's notification. When one wait must cover several CLI lanes, empty `done.txt` with `: > done.txt`, run each lane as `codex exec … ; echo "<lane> exit=$?" >> done.txt`, start `until [ "$(wc -l < done.txt)" -ge <lane count> ]; do sleep 10; done` in the background, and end the turn. Read a lane's output only after its `exit=` line exists. An output file appears before the lane finishes writing it, or never when a run fails first, and `pgrep -fa "codex exec"` lists every agent's runs, not only yours.
+- Wait by acting on each lane's notification. When one wait must cover several CLI lanes, empty `done.txt` with `: > done.txt`, run each lane as `codex exec … ; echo "<lane> exit=$?" >> done.txt`, start `until [ "$(wc -l < done.txt)" -ge <lane count> ]; do sleep 10; done` in the background, and end the turn. Read a lane's output only after its `exit=` line exists. An output file appears before the lane finishes writing it, or never when a run fails first.
 - Start native and cross-provider lanes in the same fan-out. Judge only after every lane has finished.
 - Never fall back to a different model. A missing CLI, failed login, unknown model, empty output, or non-zero exit is a dropout. Record it and follow the calling skill's dropout rule.
 - Record which model each lane used, in the synthesis note or decision trail.

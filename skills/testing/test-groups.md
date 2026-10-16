@@ -18,10 +18,8 @@ passed in 133 s each. Tests in one file run in sequence in one fork, so the
 slowest file sets the floor for every run that selects it; split a file by
 area when it runs past about 15 s.
 
-`testTimeout` is 30 s for every test, because a run beside other worktrees'
-suites can slow a test ninefold: `recordHistory.test.ts` takes 1.9 s alone and
-took up to 18 s at load 80. Only a test that needs more than 30 s gets its own
-timeout.
+`testTimeout` is 30 s for every test, because other worktrees' suites slow
+tests under load. Only a test that needs more than 30 s gets its own timeout.
 
 No project serializes its files. Vitest runs a project with
 `fileParallelism: false` alone, after every other file, so add one only for

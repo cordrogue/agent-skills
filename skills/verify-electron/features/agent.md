@@ -10,7 +10,7 @@ The app's agent panel starts a local Codex app-server for the project, signs the
 - `agent-tasks` creates and selects tasks.
 - `agent-message` sends a message and shows the transcript.
 - `agent-stop` interrupts an active turn.
-- `agent-approval` accepts or declines a proposed project change.
+- `agent-approval` accepts or declines a proposed the app change.
 
 ## How to get to it (user POV)
 

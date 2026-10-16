@@ -51,6 +51,7 @@ Every report ends with this line, which tells the waiting thread the file is com
 
 1. `## Session scope`: what counted as the session and why.
 2. `## Findings`: one `### R<nn> <title>` per candidate, in severity order, with these fields:
+   - **Cost**: per [Cost](#cost).
    - **Category**: retro's category, such as Navigation or Automated checks.
    - **Severity**: `high` cost the session real time or produced a wrong result, `medium` cost some, `low` is polish.
    - **Evidence**: transcript path and line, or a short quote.
@@ -66,17 +67,21 @@ Every report ends with this line, which tells the waiting thread the file is com
 ## Combined report
 
 1. `## Decisions for the developer`: numbered, each with its default in brackets, written per the **user-communication** skill.
-2. `## Findings`: one `### <id> <title>` per finding, in severity order. The id is `<thread8>-F<nn>`, or `<thread8>-r2-F<nn>` in a rerun. Ids never change once committed, because backlog lines and commits cite them. Fields:
+2. `## Findings`: one `### <id> <problem name>` per finding, in severity order. The id is `<thread8>-F<nn>`, or `<thread8>-r2-F<nn>` in a rerun. Ids never change once committed, because backlog lines and commits cite them. Fields, in this order:
+   - **Cost**: per [Cost](#cost).
+   - **Problem**: what went wrong.
+   - **After the change**: what agents do instead.
+   - **Change**: what to change, and where. A skill edit gives its exact text as a `diff` block.
+   - **Why it works**: why the change prevents the problem.
    - **Source**: `retro R<nn>`, `reflect <list> <n>`, or both.
    - **Severity**: as in the retro report.
    - **Evidence**: transcript path and line, or a short quote.
-   - **Change**: what to change, and where.
    - **Destination**: one of the destinations below.
-   - **Status**: `open`, `landed <commit>`, `filed to backlog`, or `declined by developer`.
+   - **Status**: `open`, `landed <commit>`, `filed to backlog`, `declined by developer`, or `saved for later`, which the developer left undecided and keeps for a future review. A report is done when no finding is `open`; `node scripts/wrap-up-status.mjs` lists every report's counts.
 3. `## Disagreements`: where the two reports conflicted and how it was settled.
 4. `## Rejected`: each dropped finding, its source, and the reason.
 5. `## Leftovers`: worktrees, branches, and untracked files the session left behind. Wrap-up lists them and never deletes them.
-6. `## Review`: each finding from Sol's review and what was done with it.
+6. `## Review`: each finding from Sol's review and skill-edit attack, and what was done with it.
 
 ## Stacks
 
@@ -86,6 +91,10 @@ Every report ends with this line, which tells the waiting thread the file is com
 - **Front matter**: `stack` in place of `thread`, `thread_title`, and `session_date`. `threads` lists each thread id with its title. `source_reports` replaces `retro_report` and `reflect_report`, with one path or `missing: <reason>` per thread and report.
 - **Ids**: `<stack>-F<nn>`, or `<stack>-r2-F<nn>` in a rerun.
 - **Source**: each source starts with its thread's thread8, as in `1a2b3c4d retro R03`.
+
+## Cost
+
+The tokens and minutes a problem cost, as `<tokens> tokens, <minutes> min`. Take the timestamps of the first and last transcript lines the problem cost, from the misstep until the work was back on track, and run `node scripts/agent-cost.mjs <session id> --from <first> --to <last>`. Sum the spans when the problem recurred. A Codex transcript gives minutes only, with `tokens not measured`. A problem that cost no extra work, such as a wrong result, says so.
 
 ## Destinations
 

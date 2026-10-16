@@ -10,6 +10,8 @@ skills; see [ATTRIBUTION.md](ATTRIBUTION.md) for who wrote what.
 - `agents/`: Claude Code subagent definitions that some skills launch
   (`poteto-agent`, `comment-sicko`, and the two `thermos`
   reviewers).
+- `notes/`: reference notes, such as
+  [Dune's principles](notes/dune-principles.md).
 - `ATTRIBUTION.md`: the source and author of every skill.
 - `licenses/`: license texts for each source.
 
@@ -47,7 +49,7 @@ pstack: `architect`, `arena`, `automate-me`, `benchmark-checklist`,
 
 **Design, from Emil Kowalski:** `prototype` and `design-foundations`.
 
-**Written for this repo:** `alpha-build`, `backlog`, `repeat-mistakes`,
+**Written for this repo:** `alpha-build`, `backlog`, `command-center`, `repeat-mistakes`,
 `run-app`, `silent-workspace-test`, `testing`, `ui-preferences`,
 `user-communication`, `verify-electron`, `wrap-up`, `wrap-up-stack`. These name
 one app's scripts, docs, and sample data, so expect to rewrite them for

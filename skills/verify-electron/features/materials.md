@@ -1,6 +1,6 @@
 # Materials
 
-Materials is a framework record kind: a gallery of materials, metals, stones, gems, woods, textiles and reagents, each with a name, summary, subtype, and image. the sample project has none.
+Materials is a framework record kind: a gallery of materials, metals, stones, gems, woods, textiles and reagents, each with a name, summary, subtype, and image. The sample project has none.
 
 ## Sub-features
 

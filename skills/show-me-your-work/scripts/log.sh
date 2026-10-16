@@ -79,9 +79,13 @@ append_row() {
 }
 
 repo_root="$(git -C "$logdir" rev-parse --show-toplevel 2>/dev/null || true)"
+git_revision() {
+	git -C "$logdir" rev-parse --verify --quiet "$1" >/dev/null 2>&1 ||
+		git -C "$logdir" rev-parse --verify --quiet "${1%%..*}" >/dev/null 2>&1
+}
 warn_evidence() {
 	local token found candidate tokens
-	read -r -a tokens <<< "$(printf '%s' "$1" | tr ',;()<>[]`"'"'"'' ' ')"
+	read -r -a tokens <<< "$(printf '%s' "$1" | tr ',;()<>[]`"'"'"'\n\r' ' ')"
 	for token in "${tokens[@]}"; do
 		token="${token%.}"
 		token="${token%%:[0-9]*}"
@@ -99,7 +103,8 @@ warn_evidence() {
 			done
 		fi
 		if [ -z "$found" ]; then
-			printf 'log.sh: warning: evidence %s does not exist beside the log or at the repo root.\n' "$token" >&2
+			git_revision "$token" ||
+				printf 'log.sh: warning: evidence %s does not exist beside the log or at the repo root.\n' "$token" >&2
 		elif git -C "$logdir" check-ignore -q -- "$found" 2>/dev/null; then
 			printf 'log.sh: warning: evidence %s is gitignored, so the repo will not hold it.\n' "$token" >&2
 		fi

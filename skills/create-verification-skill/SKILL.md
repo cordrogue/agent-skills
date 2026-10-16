@@ -8,7 +8,7 @@ disable-model-invocation: true
 
 Every serious project needs a scripted way to drive the real app and prove behavior: launch it, exercise a feature the way a user would, and capture evidence. This skill generates that as a project-local skill (`.agents/skills/verify-<app>/`) tailored to the repo. You write the generator's output for the next agent, not for a human: it will be read cold, mid-task, by an agent that has never seen the app.
 
-the app's verification skill is [`verify-electron`](../verify-electron/SKILL.md), with its feature map in `verify-electron/features/`. Run this skill against it: hold it to every section below and fix what falls short, rather than generating a second skill.
+The app's verification skill is [`verify-electron`](../verify-electron/SKILL.md), with its feature map in `verify-electron/features/`. Run this skill against it: hold it to every section below and fix what falls short, rather than generating a second skill.
 
 ## 1. Interview the repo, not the user
 
